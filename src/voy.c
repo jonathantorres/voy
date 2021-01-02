@@ -1,6 +1,128 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
 
-int main(void) {
-    printf("voy server\n");
+typedef enum {
+    VOY_ARG_NONE,
+    VOY_ARG_VERSION,
+    VOY_ARG_OK,
+    VOY_ARG_ERROR,
+} voy_args_status_t;
+
+static char *log_file_path = NULL;
+static char *conf_file_path = NULL;
+static char *args_err_msg = NULL;
+static char *args_err_unknown_arg = NULL;
+
+voy_args_status_t voy_parse_args(int argc, char **argv)
+{
+    if (argc <= 1) {
+        return VOY_ARG_NONE;
+    }
+
+    for (int i = 1; i < argc; i++) {
+        char *cur_arg = argv[i];
+        if (strcmp(cur_arg, "-v") == 0 || strcmp(cur_arg, "--version") == 0) {
+            return VOY_ARG_VERSION;
+        } else if (strcmp(cur_arg, "-c") == 0 || strcmp(cur_arg, "--config") == 0) {
+            i++;
+            if (argv[i] == NULL) {
+                args_err_msg = "error: configuration file must be specified";
+                return VOY_ARG_ERROR;
+            }
+            conf_file_path = argv[i];
+        } else if (strcmp(cur_arg, "-l") == 0 || strcmp(cur_arg, "--log") == 0) {
+            i++;
+            if (argv[i] == NULL) {
+                args_err_msg = "error: path to the log file must be specified";
+                return VOY_ARG_ERROR;
+            }
+            log_file_path = argv[i];
+        } else {
+            args_err_msg = "error: unknown option";
+            args_err_unknown_arg = cur_arg;
+            return VOY_ARG_ERROR;
+        }
+    }
+
+    return VOY_ARG_OK;
+}
+
+void voy_print_version()
+{
+    // print version and exit
+    fprintf(stderr, "voy version here\n");
+    exit(EXIT_SUCCESS);
+}
+
+void voy_print_usage()
+{
+    // print default usage and exit
+    fprintf(stderr, "default usage here\n");
+    exit(EXIT_SUCCESS);
+}
+
+// TODO: move this function to it's own file and header
+void *voy_conf_load(char *conf_file_path)
+{
+    if (conf_file_path) {
+
+    }
+    return NULL;
+}
+
+// TODO: move this function to it's own file and header
+bool voy_server_start(void *conf)
+{
+    if (conf) {
+
+    }
+    return true;
+}
+
+int main(int argc, char **argv)
+{
+    voy_args_status_t args_status = voy_parse_args(argc, argv);
+    switch (args_status) {
+        case VOY_ARG_NONE:
+            voy_print_usage();
+            break;
+        case VOY_ARG_VERSION:
+            voy_print_version();
+            break;
+        case VOY_ARG_ERROR:
+            if (args_err_msg == NULL) {
+                args_err_msg = "error: unknown error";
+            }
+            fprintf(stderr, "%s", args_err_msg);
+            if (args_err_unknown_arg) {
+                fprintf(stderr, " %s", args_err_unknown_arg);
+            }
+            fprintf(stderr, "\n");
+            voy_print_usage();
+            break;
+        case VOY_ARG_OK:
+            // all good, nothing to do
+            break;
+    }
+
+    void *conf = voy_conf_load(conf_file_path);
+    if (!conf) {
+        // handle error here and exit
+    }
+
+    bool status = voy_server_start(conf);
+    if (!status) {
+        // handle error here and exit
+    }
+
+    if (log_file_path) {
+        printf("log file path = %s\n", log_file_path);
+    }
+
+    if (conf_file_path) {
+        printf("conf file path = %s\n", conf_file_path);
+    }
     return 0;
 }
