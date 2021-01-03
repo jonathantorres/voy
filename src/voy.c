@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include "voy_server.h"
 
 typedef enum {
     VOY_ARG_NONE,
@@ -72,15 +73,6 @@ void *voy_conf_load(char *conf_file_path)
     return NULL;
 }
 
-// TODO: move this function to it's own file and header
-bool voy_server_start(void *conf)
-{
-    if (conf) {
-
-    }
-    return true;
-}
-
 int main(int argc, char **argv)
 {
     voy_args_status_t args_status = voy_parse_args(argc, argv);
@@ -115,6 +107,7 @@ int main(int argc, char **argv)
     bool status = voy_server_start(conf);
     if (!status) {
         // handle error here and exit
+        exit(1);
     }
 
     if (log_file_path) {
