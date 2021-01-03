@@ -122,6 +122,29 @@ voy_str_t *voy_str_concat(voy_str_t *str, char *chars)
     return str;
 }
 
+char *voy_str_dup(char *str)
+{
+    if (!str) {
+        return NULL;
+    }
+    size_t len = strlen(str);
+    if (len == 0) {
+        return NULL;
+    }
+    return _create_string(str);
+}
+
+voy_str_t *voy_str_dup_str(voy_str_t *str)
+{
+    if (!str) {
+        return NULL;
+    }
+    if (str->len == 0 || !str->string) {
+        return NULL;
+    }
+    return voy_str_new(str->string);
+}
+
 bool voy_str_contains(voy_str_t *str, char *substr)
 {
     if (!str || !substr || !str->string) {

@@ -14,6 +14,8 @@ voy_str_t *voy_str_new(char *chars);
 void voy_str_free(voy_str_t *str);
 int voy_str_len(voy_str_t *str);
 char *voy_str_get_string(voy_str_t *str);
+char *voy_str_dup(char *str);
+voy_str_t *voy_str_dup_str(voy_str_t *str);
 voy_str_t *voy_str_concat(voy_str_t *str, char *chars);
 voy_str_t *voy_str_concat_voy_str(voy_str_t *str, voy_str_t *chars);
 

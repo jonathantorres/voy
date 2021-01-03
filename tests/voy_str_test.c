@@ -167,6 +167,27 @@ char *test_str_suffix_str()
     return NULL;
 }
 
+char *test_str_dup()
+{
+    char *me = "Jonathan Torres";
+    char *new = voy_str_dup(me);
+    voy_assert(new != NULL, "The new string should not be NULL");
+    voy_assert(strcmp(new, me) == 0, "The new string should be equal to the old one");
+    free(new);
+    return NULL;
+}
+
+char *test_str_dup_str()
+{
+    voy_str_t *me = voy_str_new("Jonathan Torres");
+    voy_str_t *new = voy_str_dup_str(me);
+    voy_assert(new != NULL, "The new string should not be NULL");
+    voy_assert(strcmp(new->string, me->string) == 0, "The new string should be equal to the old one");
+    voy_str_free(me);
+    voy_str_free(new);
+    return NULL;
+}
+
 int main(void)
 {
     voy_start_tests("voy str tests");
@@ -183,6 +204,8 @@ int main(void)
     voy_run_test(test_str_has_prefix_str);
     voy_run_test(test_str_suffix);
     voy_run_test(test_str_suffix_str);
+    voy_run_test(test_str_dup);
+    voy_run_test(test_str_dup_str);
     voy_end_tests();
     return 0;
 }
