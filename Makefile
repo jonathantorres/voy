@@ -1,6 +1,5 @@
 VPATH = src tests bin
-# TODO: should use c11 as the standard, need to implement strdup()
-CFLAGS = gcc -g -std=gnu11 -Wall -Wextra -Isrc
+CFLAGS = gcc -g -std=c11 -Wall -Wextra -Isrc
 SOURCES = $(wildcard src/*.c)
 
 all: voy test
