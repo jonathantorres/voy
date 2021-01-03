@@ -4,8 +4,8 @@ SOURCES = $(wildcard src/*.c)
 
 all: voy test
 
-voy: voy.c voy_server.o voy_request.o voy_response.o voy_file.o voy_htable.o voy_array.o
-	$(CFLAGS) src/voy.c voy_server.o voy_request.o voy_response.o voy_file.o voy_htable.o voy_array.o -o bin/voy
+voy: voy.c voy_server.o voy_request.o voy_response.o voy_file.o voy_htable.o voy_array.o voy_str.o
+	$(CFLAGS) src/voy.c voy_server.o voy_request.o voy_response.o voy_file.o voy_htable.o voy_array.o voy_str.o -o bin/voy
 
 # Tests
 voy_dl_list_test: voy_dl_list_test.c voy_dl_list.o

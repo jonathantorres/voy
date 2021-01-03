@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 
+#include "voy_str.h"
 #include "voy_request.h"
 #include "voy_response.h"
 

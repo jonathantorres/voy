@@ -179,7 +179,7 @@ char *_voy_get_file_ext(char *uri)
     // we couldn't find the file extension, use txt by default
     if (dot_loc == 0) {
         free(file_ext);
-        return strdup("txt");
+        return voy_str_dup("txt");
     }
     memcpy(file_ext, uri_p, uri_len - dot_loc);
     file_ext[(uri_len - dot_loc) + 1] = '\0';
@@ -206,8 +206,8 @@ void _voy_serve_file(voy_request_t *req, voy_response_t *res, char *contents, si
     char *content_len_str = _voy_get_content_len_str(contents_len);
 
     voy_response_set_status_code(res, 200);
-    voy_response_set_header(res, "Content-Length", strdup(content_len_str));
-    voy_response_set_header(res, "Content-Type", strdup(cur_content_type->type_str));
+    voy_response_set_header(res, "Content-Length", voy_str_dup(content_len_str));
+    voy_response_set_header(res, "Content-Type", voy_str_dup(cur_content_type->type_str));
     voy_response_set_body(res, contents);
     voy_response_set_body_len(res, contents_len);
 

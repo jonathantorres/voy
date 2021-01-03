@@ -66,8 +66,8 @@ int voy_bind_and_listen(int port)
 
 void voy_set_default_response_headers(voy_response_t *res)
 {
-    voy_response_set_header(res, "Server", strdup("voy v0.0.1"));
-    voy_response_set_header(res, "Connection", strdup("close"));
+    voy_response_set_header(res, "Server", voy_str_dup("voy v0.0.1"));
+    voy_response_set_header(res, "Connection", voy_str_dup("close"));
 }
 
 void voy_serve_404(voy_response_t *res)
@@ -76,10 +76,10 @@ void voy_serve_404(voy_response_t *res)
     char not_found_len_str[3] = {0, 0, 0};
     snprintf(not_found_len_str, 3, "%d", (int)strlen(not_found_msg));
     voy_response_set_status_code(res, 404);
-    voy_response_set_body(res, strdup(not_found_msg));
+    voy_response_set_body(res, voy_str_dup(not_found_msg));
     voy_response_set_body_len(res, strlen(not_found_msg));
-    voy_response_set_header(res, "Content-Length", strdup(not_found_len_str));
-    voy_response_set_header(res, "Content-Type", strdup("text/html"));
+    voy_response_set_header(res, "Content-Length", voy_str_dup(not_found_len_str));
+    voy_response_set_header(res, "Content-Type", voy_str_dup("text/html"));
 }
 
 bool voy_server_start(void *conf)

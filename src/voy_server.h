@@ -16,6 +16,7 @@
 #include "voy_request.h"
 #include "voy_response.h"
 #include "voy_file.h"
+#include "voy_str.h"
 
 #define VOY_DEFAULT_PORT 9090
 #define VOY_RECV_BUFF_LEN 1000000
