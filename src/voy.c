@@ -2,7 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+
 #include "voy_server.h"
+#include "voy_conf.h"
 
 #define VOY_VERSION "0.1.0"
 #define DEFAULT_PREFIX "/usr/local/voy"
@@ -19,7 +21,6 @@ typedef enum {
 void voy_print_usage();
 void voy_print_version();
 voy_args_status_t voy_parse_args(int argc, char **argv);
-void *voy_conf_load(char *conf_file_path);
 
 static char *log_file_path = NULL;
 static char *conf_file_path = NULL;
@@ -56,6 +57,8 @@ int main(int argc, char **argv)
     if (!conf) {
         // handle error here and exit
     }
+
+    // TODO: initialize logging mechanism
 
     bool status = voy_server_start(conf);
     if (!status) {
@@ -105,15 +108,6 @@ voy_args_status_t voy_parse_args(int argc, char **argv)
     }
 
     return VOY_ARG_OK;
-}
-
-// TODO: move this function to it's own file and header
-void *voy_conf_load(char *conf_file_path)
-{
-    if (conf_file_path) {
-
-    }
-    return NULL;
 }
 
 void voy_print_version()
