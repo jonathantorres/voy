@@ -4,6 +4,11 @@
 #include <stdbool.h>
 #include "voy_server.h"
 
+#define VOY_VERSION "0.1.0"
+#define DEFAULT_PREFIX "/usr/local/voy"
+#define DEFAULT_CONF_FILE DEFAULT_PREFIX "/conf/voy.conf"
+#define DEFAULT_LOG_FILE DEFAULT_PREFIX "/log/voy.log"
+
 typedef enum {
     VOY_ARG_NONE,
     VOY_ARG_VERSION,
@@ -52,15 +57,19 @@ voy_args_status_t voy_parse_args(int argc, char **argv)
 
 void voy_print_version()
 {
-    // print version and exit
-    fprintf(stderr, "voy version here\n");
+    fprintf(stderr, "voy version v%s\n", VOY_VERSION);
     exit(EXIT_SUCCESS);
 }
 
 void voy_print_usage()
 {
-    // print default usage and exit
-    fprintf(stderr, "default usage here\n");
+    fprintf(stderr, "voy [-v] [--version]\n");
+    fprintf(stderr, "    [-c <file> | --config <file>]\n");
+    fprintf(stderr, "    [-l <path> | --log <path>]\n");
+    fprintf(stderr, "\n-v --version\tPrint version and exit");
+    fprintf(stderr, "\n-c <file>\tUse the specified configuration file (default is %s)", DEFAULT_CONF_FILE);
+    fprintf(stderr, "\n-l <path>\tStore logs in this location (default is %s)", DEFAULT_LOG_FILE);
+    fprintf(stderr, "\n");
     exit(EXIT_SUCCESS);
 }
 
