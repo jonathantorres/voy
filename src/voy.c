@@ -59,7 +59,7 @@ int main(int argc, char **argv)
     }
 
     // TODO: initialize logging mechanism
-
+    exit(0); // remove this!
     bool status = voy_server_start(conf);
     if (!status) {
         // handle error here and exit
