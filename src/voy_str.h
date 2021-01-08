@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+#include "voy_array.h"
 
 typedef struct voy_str {
     char *string;
@@ -18,6 +19,7 @@ char *voy_str_dup(char *str);
 voy_str_t *voy_str_dup_str(voy_str_t *str);
 voy_str_t *voy_str_concat(voy_str_t *str, char *chars);
 voy_str_t *voy_str_concat_voy_str(voy_str_t *str, voy_str_t *chars);
+voy_array_t *voy_str_split_by_char(voy_str_t *str, char delim);
 
 bool voy_str_contains(voy_str_t *str, char *substr);
 bool voy_str_contains_voy_str(voy_str_t *str, voy_str_t *substr);

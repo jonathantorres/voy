@@ -16,8 +16,8 @@ voy_array_test: voy_array_test.c voy_array.o
 	$(CFLAGS) tests/voy_array_test.c voy_array.o -o bin/voy_array_test
 voy_htable_test: voy_htable_test.c voy_htable.o voy_array.o
 	$(CFLAGS) tests/voy_htable_test.c voy_htable.o voy_array.o -o bin/voy_htable_test
-voy_str_test: voy_str_test.c voy_str.o
-	$(CFLAGS) tests/voy_str_test.c voy_str.o -o bin/voy_str_test
+voy_str_test: voy_str_test.c voy_str.o voy_array.o
+	$(CFLAGS) tests/voy_str_test.c voy_str.o voy_array.o -o bin/voy_str_test
 
 # Objects
 voy_server.o: voy_server.c voy_server.h

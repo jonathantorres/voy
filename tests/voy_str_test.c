@@ -2,6 +2,12 @@
 #include "voy_str.h"
 #include "voy_unittest.h"
 
+void voy_array_of_voy_strs_cb(void *str)
+{
+    voy_str_t *s = (voy_str_t*)str;
+    voy_str_free(s);
+}
+
 char *test_create_empty_string()
 {
     voy_str_t *str = voy_str_new("");
@@ -188,6 +194,48 @@ char *test_str_dup_str()
     return NULL;
 }
 
+char *test_str_split_by_char()
+{
+    voy_str_t *s = voy_str_new("one,two,three");
+    voy_array_t *res = voy_str_split_by_char(s, ',');
+    voy_str_t *cur_s = NULL;
+    voy_assert(res->len == 3, "The length of the resulting array should be 3");
+    cur_s = voy_array_get(res, 0);
+    voy_assert(cur_s != NULL, "The string returned at index 0 should not be NULL");
+    voy_assert(strcmp("one", cur_s->string) == 0, "The string at index 0 is not equal to \"one\"");
+
+    cur_s = voy_array_get(res, 1);
+    voy_assert(cur_s != NULL, "The string returned at index 1 should not be NULL");
+    voy_assert(strcmp("two", cur_s->string) == 0, "The string at index 1 is not equal to \"two\"");
+
+    cur_s = voy_array_get(res, 2);
+    voy_assert(cur_s != NULL, "The string returned at index 2 should not be NULL");
+    voy_assert(strcmp("three", cur_s->string) == 0, "The string at index 2 is not equal to \"three\"");
+
+    voy_str_free(s);
+    voy_array_free(res, voy_array_of_voy_strs_cb);
+    return NULL;
+}
+
+char *test_str_split_by_char_with_equals()
+{
+    voy_str_t *s = voy_str_new("name = localhost");
+    voy_array_t *res = voy_str_split_by_char(s, '=');
+    voy_str_t *cur_s = NULL;
+    voy_assert(res->len == 2, "The length of the resulting array should be 2");
+    cur_s = voy_array_get(res, 0);
+    voy_assert(cur_s != NULL, "The string returned at index 0 should not be NULL");
+    voy_assert(strcmp("name ", cur_s->string) == 0, "The string at index 0 is not equal to \"name \"");
+
+    cur_s = voy_array_get(res, 1);
+    voy_assert(cur_s != NULL, "The string returned at index 1 should not be NULL");
+    voy_assert(strcmp(" localhost", cur_s->string) == 0, "The string at index 1 is not equal to \" localhost\"");
+
+    voy_str_free(s);
+    voy_array_free(res, voy_array_of_voy_strs_cb);
+    return NULL;
+}
+
 int main(void)
 {
     voy_start_tests("voy str tests");
@@ -206,6 +254,8 @@ int main(void)
     voy_run_test(test_str_suffix_str);
     voy_run_test(test_str_dup);
     voy_run_test(test_str_dup_str);
+    voy_run_test(test_str_split_by_char);
+    voy_run_test(test_str_split_by_char_with_equals);
     voy_end_tests();
     return 0;
 }

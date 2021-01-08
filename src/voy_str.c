@@ -145,6 +145,62 @@ voy_str_t *voy_str_dup_str(voy_str_t *str)
     return voy_str_new(str->string);
 }
 
+voy_array_t *voy_str_split_by_char(voy_str_t *str, char delim)
+{
+    if (!str) {
+        return NULL;
+    }
+    if (str->len == 0 || !str->string) {
+        return NULL;
+    }
+
+    // find out how many delimiters are in the string
+    int delim_count = 0;
+    for (int i = 0; i < (int)strlen(str->string); i++) {
+        if (str->string[i] == delim) {
+            delim_count++;
+        }
+    }
+    if (delim_count == 0) {
+        return NULL;
+    }
+
+    voy_array_t *splits = voy_array_new(delim_count, sizeof(voy_str_t*));
+    if (!splits) {
+        return NULL;
+    }
+    char *buf = malloc(strlen(str->string));
+    if (!buf) {
+        voy_array_free(splits, NULL);
+        return NULL;
+    }
+    memset(buf, 0, strlen(str->string));
+    char *buf_p = buf;
+
+    for (int j = 0; j < (int)strlen(str->string); j++) {
+        if (str->string[j] == delim || j == (int)(strlen(str->string) - 1)) {
+            // in the current delimiter or the end of the string,
+            // push the string to the array and reset the buffer
+            if (j == (int)(strlen(str->string) - 1)) {
+                *buf_p = str->string[j];
+                buf_p++;
+            }
+
+            *buf_p = '\0';
+            voy_str_t *part = voy_str_new(buf);
+            voy_array_push(splits, part);
+            buf_p = buf;
+            continue;
+        }
+
+        *buf_p = str->string[j];
+        buf_p++;
+    }
+    free(buf);
+
+    return splits;
+}
+
 bool voy_str_contains(voy_str_t *str, char *substr)
 {
     if (!str || !substr || !str->string) {
