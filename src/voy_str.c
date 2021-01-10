@@ -152,6 +152,54 @@ voy_str_t *voy_str_dup_str(voy_str_t *str)
     return voy_str_new(str->string);
 }
 
+void voy_str_trim(voy_str_t *str)
+{
+    if (!str) {
+        return;
+    }
+    if (str->len == 0 || !str->string) {
+        return;
+    }
+
+    int spaces_left = 0;
+    char *str_p = str->string;
+
+    // count the amount of whitespace on the left
+    for (int i = 0; i < str->len; i++) {
+        if (isspace(str->string[i])) {
+            spaces_left++;
+            str_p++;
+            continue;
+        }
+        break;
+    }
+    if (spaces_left > 0) {
+        str->len = str->len - spaces_left;
+        str->string = str_p;
+    }
+
+    int spaces_right = 0;
+    bool ws_found = false;
+    str_p = &str->string[str->len-1];
+    // move string pointer the left as long as there is whitespace
+    for (int i = str->len-1; i > 0; i--) {
+        if (isspace(str->string[i])) {
+            spaces_right++;
+            ws_found = true;
+            str_p--;
+            continue;
+        }
+        if (ws_found) {
+            *++str_p = '\0';
+        }
+        break;
+    }
+
+    if (spaces_right > 0) {
+        str->len = str->len - spaces_right;
+    }
+}
+
 voy_array_t *voy_str_split_by_char(voy_str_t *str, char delim)
 {
     if (!str) {

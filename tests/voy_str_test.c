@@ -236,6 +236,24 @@ char *test_str_split_by_char_with_equals()
     return NULL;
 }
 
+char *test_str_trim()
+{
+    voy_str_t *s1 = voy_str_new("   Jonathan");
+    voy_str_t *s2 = voy_str_new("  Jonathan   ");
+    voy_str_t *s3 = voy_str_new("Jonathan   ");
+    voy_str_trim(s1);
+    voy_str_trim(s2);
+    voy_str_trim(s3);
+    voy_assert(strcmp(s1->string, "Jonathan") == 0, "The resulting string from (s1) does not have the expected value");
+    voy_assert(strcmp(s2->string, "Jonathan") == 0, "The resulting string from (s2) does not have the expected value");
+    voy_assert(strcmp(s3->string, "Jonathan") == 0, "The resulting string from (s3) does not have the expected value");
+
+    voy_str_free(s1);
+    voy_str_free(s2);
+    voy_str_free(s3);
+    return NULL;
+}
+
 int main(void)
 {
     voy_start_tests("voy str tests");
@@ -256,6 +274,7 @@ int main(void)
     voy_run_test(test_str_dup_str);
     voy_run_test(test_str_split_by_char);
     voy_run_test(test_str_split_by_char_with_equals);
+    voy_run_test(test_str_trim);
     voy_end_tests();
     return 0;
 }
