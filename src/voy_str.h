@@ -8,6 +8,7 @@
 
 typedef struct voy_str {
     char *string;
+    char *start_p;
     int len;
 } voy_str_t;
 

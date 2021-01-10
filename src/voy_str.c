@@ -51,6 +51,7 @@ voy_str_t *voy_str_new(char *chars)
 
     str->len = 0;
     str->string = NULL;
+    str->start_p = NULL;
     if (!chars) {
         char *empty_str = _create_string("");
         if (!empty_str) {
@@ -58,11 +59,13 @@ voy_str_t *voy_str_new(char *chars)
             return NULL;
         }
         str->string = empty_str;
+        str->start_p = empty_str;
         return str;
     }
 
     str->len = strlen(chars);
     str->string = _create_string(chars);
+    str->start_p = str->string;
     return str;
 }
 
@@ -71,9 +74,11 @@ void voy_str_free(voy_str_t *str)
     if (!str) {
         return;
     }
-    if (str->string) {
-        free(str->string);
+    if (str->start_p) {
+        free(str->start_p);
     }
+    str->start_p = NULL;
+    str->string = NULL;
     free(str);
 }
 
@@ -104,6 +109,7 @@ voy_str_t *voy_str_concat_voy_str(voy_str_t *str, voy_str_t *chars)
     unsigned long chars_len = strlen(chars->string);
 
     str->string = _concat_chars(str->string, chars->string);
+    str->start_p = str->string;
     str->len += chars_len;
 
     return str;
@@ -117,6 +123,7 @@ voy_str_t *voy_str_concat(voy_str_t *str, char *chars)
     unsigned long chars_len = strlen(chars);
 
     str->string = _concat_chars(str->string, chars);
+    str->start_p = str->string;
     str->len += chars_len;
 
     return str;
