@@ -53,12 +53,13 @@ int main(int argc, char **argv)
             break;
     }
 
-    void *conf = voy_conf_load(conf_file_path);
+    // TODO: initialize logging mechanism
+
+    voy_conf_t *conf = voy_conf_load(conf_file_path);
     if (!conf) {
         // handle error here and exit
     }
 
-    // TODO: initialize logging mechanism
     exit(0); // remove this!
     bool status = voy_server_start(conf);
     if (!status) {

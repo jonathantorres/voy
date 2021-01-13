@@ -5,9 +5,14 @@
 
 voy_array_t *voy_open_and_strip_comments(char *conf_file_path);
 voy_array_t *voy_parse_includes(voy_array_t *conf_arr);
-void voy_check_for_syntax_errors(voy_array_t *conf_arr);
-void voy_build_server_conf(voy_array_t *conf_arr);
+voy_conf_t *voy_build_server_conf(voy_array_t *conf_arr);
+voy_server_conf_t *voy_server_conf_new();
 char *voy_strip_comment_from_line(char *line);
+void voy_check_for_syntax_errors(voy_array_t *conf_arr);
+void voy_server_conf_add_option(voy_server_conf_t *conf, voy_str_t *op_name, voy_str_t *op_value);
+void voy_conf_add_option(voy_conf_t *conf, voy_str_t *op_name, voy_str_t *op_value);
+void voy_conf_add_vhost(voy_conf_t *conf, voy_server_conf_t *vhost);
+void voy_array_strs_free_cb(void *value);
 
 voy_conf_t *voy_conf_load(char *conf_file_path)
 {
@@ -19,13 +24,14 @@ voy_conf_t *voy_conf_load(char *conf_file_path)
 
     conf_arr = voy_parse_includes(conf_arr); // TODO
     voy_check_for_syntax_errors(conf_arr); // TODO
-    voy_build_server_conf(conf_arr); // TODO
 
-    VOY_ARRAY_FOREACH(conf_arr) {
-        voy_str_t *cur_line = voy_array_get(conf_arr, i);
-        printf("%s", cur_line->string);
+    voy_conf_t *conf = voy_build_server_conf(conf_arr);
+    if (!conf) {
+        // TODO: log the error
+        return NULL;
     }
-    return NULL;
+
+    return conf;
 }
 
 voy_array_t *voy_open_and_strip_comments(char *conf_file_path)
@@ -104,8 +110,143 @@ void voy_check_for_syntax_errors(voy_array_t *conf_arr)
     return;
 }
 
-void voy_build_server_conf(voy_array_t *conf_arr)
+voy_conf_t *voy_build_server_conf(voy_array_t *conf_arr)
 {
-    if (conf_arr) {}
-    return;
+    if (!conf_arr) {
+        return NULL;
+    }
+
+    voy_conf_t *conf = malloc(sizeof(voy_conf_t));
+    if (!conf) {
+        // TODO: log the error
+        return NULL;
+    }
+    memset(conf, 0, sizeof(voy_conf_t));
+
+    conf->user           = NULL;
+    conf->group          = NULL;
+    conf->default_server = NULL;
+    conf->vhosts         = NULL;
+
+    voy_server_conf_t *cur_vhost = NULL;
+    bool inside_vhost = false;
+
+    VOY_ARRAY_FOREACH(conf_arr) {
+        voy_str_t *line = voy_array_get(conf_arr, i);
+
+        if (voy_str_contains_char(line, VOY_EQUAL_SIGN)) {
+            // this is a line with an option
+            voy_array_t *ops = voy_str_split_by_char(line, VOY_EQUAL_SIGN);
+            if (!ops) {
+                // log the error here
+                continue;
+            }
+            voy_str_t *op_name = voy_array_get(ops, 0);
+            voy_str_t *op_value = voy_array_get(ops, 1);
+            voy_str_trim(op_name);
+            voy_str_trim(op_value);
+            if (inside_vhost) {
+                // option for the current virtual host
+                voy_server_conf_add_option(cur_vhost, op_name, op_value);
+            } else {
+                // top level or global option
+                voy_conf_add_option(conf, op_name, op_value);
+            }
+            voy_array_free(ops, voy_array_strs_free_cb);
+        } else if (voy_str_contains(line, VOY_VHOST_OPTION)) {
+            // this is a line with a vhost command
+            inside_vhost = true;
+            cur_vhost    = voy_server_conf_new();
+        } else if (voy_str_contains_char(line, VOY_CLOSING_BRACKET)) {
+            // closing bracket for a vhost command
+            if (inside_vhost) {
+                voy_conf_add_vhost(conf, cur_vhost);
+                cur_vhost    = NULL;
+                inside_vhost = false;
+            }
+        }
+        printf("%s", line->string);
+    }
+    return conf;
+}
+
+void voy_server_conf_add_option(voy_server_conf_t *conf, voy_str_t *op_name, voy_str_t *op_value)
+{
+    if (!conf) {
+        return;
+    }
+
+    if (voy_str_equals(op_name, VOY_NAME_OPTION)) {
+        // todo
+    } else if (voy_str_equals(op_name, VOY_ROOT_OPTION)) {
+        conf->root = voy_str_new(op_value->string);
+    } else if (voy_str_equals(op_name, VOY_PORT_OPTION)) {
+        // todo
+    } else if (voy_str_equals(op_name, VOY_INDEX_OPTION)) {
+        // todo
+    } else if (voy_str_equals(op_name, VOY_ERROR_LOG_OPTION)) {
+        conf->error_log = voy_str_new(op_value->string);
+    } else if (voy_str_equals(op_name, VOY_ACCESS_LOG_OPTION)) {
+        conf->access_log = voy_str_new(op_value->string);
+    }
+
+    if (voy_str_contains(op_name, VOY_ERROR_PAGE_OPTION)) {
+        // todo
+    }
+}
+
+void voy_conf_add_option(voy_conf_t *conf, voy_str_t *op_name, voy_str_t *op_value)
+{
+    if (!conf) {
+        return;
+    }
+    if (conf->default_server == NULL) {
+        conf->default_server = voy_server_conf_new();
+    }
+
+    if (voy_str_equals(op_name, VOY_USER_OPTION)) {
+        conf->user = voy_str_new(op_value->string);
+    } else if (voy_str_equals(op_name, VOY_GROUP_OPTION)) {
+        conf->group = voy_str_new(op_value->string);
+    } else {
+        voy_server_conf_add_option(conf->default_server, op_name, op_value);
+    }
+}
+
+voy_server_conf_t *voy_server_conf_new()
+{
+    voy_server_conf_t *conf = malloc(sizeof(voy_server_conf_t));
+    if (!conf) {
+        // TODO: log this
+        return NULL;
+    }
+
+    conf->root        = NULL;
+    conf->names       = NULL;
+    conf->ports       = NULL;
+    conf->index_pages = NULL;
+    conf->error_pages = NULL;
+    conf->error_log   = NULL;
+    conf->access_log  = NULL;
+
+    return conf;
+}
+
+void voy_conf_add_vhost(voy_conf_t *conf, voy_server_conf_t *vhost)
+{
+    if (!conf || !vhost) {
+        return;
+    }
+    if (conf->vhosts == NULL) {
+        conf->vhosts = voy_array_new(10, sizeof(voy_server_conf_t*));
+    }
+
+    voy_array_push(conf->vhosts, vhost);
+}
+
+void voy_array_strs_free_cb(void *value)
+{
+    if (value) {
+        voy_str_free((voy_str_t*)value);
+    }
 }
