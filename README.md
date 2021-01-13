@@ -1,3 +1,5 @@
 # voy
-HTTP server
+Experimental HTTP server, do not use in production.
 
+## Install
+Install instructions
