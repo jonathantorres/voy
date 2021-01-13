@@ -358,3 +358,27 @@ bool voy_str_has_suffix_voy_str(voy_str_t *str, voy_str_t *suffix)
     }
     return false;
 }
+
+bool voy_str_equals(voy_str_t *vstr, char *cstr)
+{
+    if (!vstr || !cstr || !vstr->string) {
+        return false;
+    }
+
+    if (strlen(cstr) == 0 && vstr->len == 0) {
+        return true;
+    }
+
+    if (strcmp(vstr->string, cstr) == 0) {
+        return true;
+    }
+    return false;
+}
+
+bool voy_str_equals_voy_str(voy_str_t *str1, voy_str_t *str2)
+{
+    if (!str2) {
+        return false;
+    }
+    return voy_str_equals(str1, str2->string);
+}

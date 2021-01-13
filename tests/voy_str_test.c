@@ -254,6 +254,52 @@ char *test_str_trim()
     return NULL;
 }
 
+char *test_str_equals()
+{
+    voy_str_t *s1 = voy_str_new("one");
+    voy_str_t *s2 = voy_str_new("");
+
+    bool res;
+    res = voy_str_equals(s1, "one");
+    voy_assert(res == true, "The string in s1 should be equal to 'one'");
+    res = voy_str_equals(s1, "two");
+    voy_assert(res == false, "The string in s1 should not be equal to 'two'");
+    res = voy_str_equals(s2, "one");
+    voy_assert(res == false, "The string in s2 should not be equal to 'one'");
+    res = voy_str_equals(s2, "");
+    voy_assert(res == true, "The strings should be equal since they are empty");
+
+    voy_str_free(s1);
+    voy_str_free(s2);
+    return NULL;
+}
+
+char *test_str_equals_str()
+{
+    voy_str_t *s1 = voy_str_new("one");
+    voy_str_t *s2 = voy_str_new("");
+    voy_str_t *s3 = voy_str_new("one");
+    voy_str_t *s4 = voy_str_new("two");
+    voy_str_t *s5 = voy_str_new("");
+
+    bool res;
+    res = voy_str_equals_voy_str(s1, s3);
+    voy_assert(res == true, "The string in s1 should be equal to the one in s3");
+    res = voy_str_equals_voy_str(s1, s4);
+    voy_assert(res == false, "The string in s1 should not be equal to the one in s4");
+    res = voy_str_equals_voy_str(s2, s1);
+    voy_assert(res == false, "The string in s2 should not be equal to the one in s1");
+    res = voy_str_equals_voy_str(s2, s5);
+    voy_assert(res == true, "The strings should be equal since they are empty");
+
+    voy_str_free(s1);
+    voy_str_free(s2);
+    voy_str_free(s3);
+    voy_str_free(s4);
+    voy_str_free(s5);
+    return NULL;
+}
+
 int main(void)
 {
     voy_start_tests("voy str tests");
@@ -275,6 +321,8 @@ int main(void)
     voy_run_test(test_str_split_by_char);
     voy_run_test(test_str_split_by_char_with_equals);
     voy_run_test(test_str_trim);
+    voy_run_test(test_str_equals);
+    voy_run_test(test_str_equals_str);
     voy_end_tests();
     return 0;
 }
