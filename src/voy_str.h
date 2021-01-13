@@ -26,6 +26,7 @@ void voy_str_trim(voy_str_t *str);
 
 bool voy_str_contains(voy_str_t *str, char *substr);
 bool voy_str_contains_voy_str(voy_str_t *str, voy_str_t *substr);
+bool voy_str_contains_char(voy_str_t *str, char ch);
 bool voy_str_equals(voy_str_t *vstr, char *cstr);
 bool voy_str_equals_voy_str(voy_str_t *str1, voy_str_t *str2);
 bool voy_str_has_prefix(voy_str_t *str, char *prefix);

@@ -88,6 +88,17 @@ char *test_str_contains()
     return NULL;
 }
 
+char *test_str_contains_char()
+{
+    voy_str_t *str = voy_str_new("Jonathan");
+    bool found = voy_str_contains_char(str, 'J');
+    voy_assert(found == true, "The character 'J' is in 'Jonathan'");
+    found = voy_str_contains_char(str, 'i');
+    voy_assert(found == false, "The character 'i' is not in 'Jonathan'");
+    voy_str_free(str);
+    return NULL;
+}
+
 char *test_contains_str()
 {
     voy_str_t *str1 = voy_str_new("Jonathan");
@@ -311,6 +322,7 @@ int main(void)
     voy_run_test(test_str_concat);
     voy_run_test(test_concat_str);
     voy_run_test(test_str_contains);
+    voy_run_test(test_str_contains_char);
     voy_run_test(test_contains_str);
     voy_run_test(test_str_has_prefix);
     voy_run_test(test_str_has_prefix_str);

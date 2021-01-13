@@ -288,6 +288,19 @@ bool voy_str_contains_voy_str(voy_str_t *str, voy_str_t *substr)
     return false;
 }
 
+bool voy_str_contains_char(voy_str_t *str, char ch)
+{
+    if (!str || !str->string) {
+        return false;
+    }
+
+    char *res = NULL;
+    if ((res = strchr(str->string, ch)) == NULL) {
+        return false;
+    }
+    return true;
+}
+
 bool voy_str_has_prefix(voy_str_t *str, char *prefix)
 {
     if (!str || !prefix || !str->string) {
