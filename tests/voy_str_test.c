@@ -228,6 +228,22 @@ char *test_str_split_by_char()
     return NULL;
 }
 
+char *test_str_split_by_char_no_delim()
+{
+    voy_str_t *s = voy_str_new("one");
+    voy_array_t *res = voy_str_split_by_char(s, ',');
+    voy_str_t *cur_s = NULL;
+    voy_assert(res != NULL, "The returned array cannot be NULL");
+    voy_assert(res->len == 1, "The length of the resulting array should be 1");
+    cur_s = voy_array_get(res, 0);
+    voy_assert(cur_s != NULL, "The string returned at index 0 should not be NULL");
+    voy_assert(strcmp("one", cur_s->string) == 0, "The string at index 0 is not equal to \"one\"");
+
+    voy_str_free(s);
+    voy_array_free(res, voy_array_of_voy_strs_cb);
+    return NULL;
+}
+
 char *test_str_split_by_char_with_equals()
 {
     voy_str_t *s = voy_str_new("name = localhost");
@@ -331,6 +347,7 @@ int main(void)
     voy_run_test(test_str_dup);
     voy_run_test(test_str_dup_str);
     voy_run_test(test_str_split_by_char);
+    voy_run_test(test_str_split_by_char_no_delim);
     voy_run_test(test_str_split_by_char_with_equals);
     voy_run_test(test_str_trim);
     voy_run_test(test_str_equals);

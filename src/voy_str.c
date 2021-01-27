@@ -216,11 +216,21 @@ voy_array_t *voy_str_split_by_char(voy_str_t *str, char delim)
             delim_count++;
         }
     }
+
+    // No delimiters, just return the array with 1 element with the string in it
+    voy_array_t *splits = NULL;
     if (delim_count == 0) {
-        return NULL;
+        splits = voy_array_new(1, sizeof(voy_str_t*));
+        if (!splits) {
+            return NULL;
+        }
+
+        voy_str_t *new_str = voy_str_new(str->string);
+        voy_array_push(splits, new_str);
+        return splits;
     }
 
-    voy_array_t *splits = voy_array_new(delim_count, sizeof(voy_str_t*));
+    splits = voy_array_new(delim_count, sizeof(voy_str_t*));
     if (!splits) {
         return NULL;
     }
