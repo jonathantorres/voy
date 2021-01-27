@@ -3,6 +3,7 @@
 #define VOY_CONF_LINE_BUF_SIZE 1024
 #define VOY_CONF_LINES 50
 
+voy_array_t *voy_parse_name_options(voy_str_t *names);
 voy_array_t *voy_open_and_strip_comments(char *conf_file_path);
 voy_array_t *voy_parse_includes(voy_array_t *conf_arr);
 voy_conf_t *voy_build_server_conf(voy_array_t *conf_arr);
@@ -177,7 +178,7 @@ void voy_server_conf_add_option(voy_server_conf_t *conf, voy_str_t *op_name, voy
     }
 
     if (voy_str_equals(op_name, VOY_NAME_OPTION)) {
-        // todo
+        conf->names = voy_parse_name_options(op_value);
     } else if (voy_str_equals(op_name, VOY_ROOT_OPTION)) {
         conf->root = voy_str_new(op_value->string);
     } else if (voy_str_equals(op_name, VOY_PORT_OPTION)) {
@@ -242,6 +243,47 @@ void voy_conf_add_vhost(voy_conf_t *conf, voy_server_conf_t *vhost)
     }
 
     voy_array_push(conf->vhosts, vhost);
+}
+
+voy_array_t *voy_parse_name_options(voy_str_t *names)
+{
+    voy_array_t *found_names = voy_str_split_by_char(names, ',');
+    if (!found_names) {
+        return NULL;
+    }
+
+    voy_array_t *server_names = voy_array_new(10, sizeof(voy_str_t*));
+    if (!server_names) {
+        voy_array_free(found_names, voy_array_strs_free_cb);
+        return NULL;
+    }
+
+    VOY_ARRAY_FOREACH(found_names) {
+        bool name_found = false;
+        voy_str_t *cur_name = voy_array_get(found_names, i);
+
+        // make sure that there are no duplicates
+        for (unsigned int j = 0; j < server_names->len; j++) {
+            voy_str_t *stored_name = voy_array_get(server_names, j);
+
+            if (voy_str_equals_voy_str(cur_name, stored_name)) {
+                name_found = true;
+                break;
+            }
+        }
+
+        if (!name_found) {
+            voy_str_t *new_name = voy_str_new(cur_name->string);
+            if (new_name) {
+                voy_str_trim(new_name);
+                voy_array_push(server_names, new_name);
+            }
+        }
+    }
+
+    voy_array_free(found_names, voy_array_strs_free_cb);
+
+    return server_names;
 }
 
 void voy_array_strs_free_cb(void *value)
