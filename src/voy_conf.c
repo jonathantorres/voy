@@ -4,6 +4,7 @@
 #define VOY_CONF_LINES 50
 
 voy_array_t *voy_parse_name_options(voy_str_t *names);
+voy_array_t *voy_parse_port_options(voy_str_t *ports);
 voy_array_t *voy_open_and_strip_comments(char *conf_file_path);
 voy_array_t *voy_parse_includes(voy_array_t *conf_arr);
 voy_conf_t *voy_build_server_conf(voy_array_t *conf_arr);
@@ -182,7 +183,7 @@ void voy_server_conf_add_option(voy_server_conf_t *conf, voy_str_t *op_name, voy
     } else if (voy_str_equals(op_name, VOY_ROOT_OPTION)) {
         conf->root = voy_str_new(op_value->string);
     } else if (voy_str_equals(op_name, VOY_PORT_OPTION)) {
-        // todo
+        conf->ports = voy_parse_port_options(op_value);
     } else if (voy_str_equals(op_name, VOY_INDEX_OPTION)) {
         // todo
     } else if (voy_str_equals(op_name, VOY_ERROR_LOG_OPTION)) {
@@ -284,6 +285,49 @@ voy_array_t *voy_parse_name_options(voy_str_t *names)
     voy_array_free(found_names, voy_array_strs_free_cb);
 
     return server_names;
+}
+
+voy_array_t *voy_parse_port_options(voy_str_t *ports)
+{
+    voy_array_t *found_ports = voy_str_split_by_char(ports, ',');
+    if (!found_ports) {
+        return NULL;
+    }
+
+    voy_array_t *server_ports = voy_array_new(10, sizeof(int*));
+    if (!server_ports) {
+        voy_array_free(found_ports, voy_array_strs_free_cb);
+        return NULL;
+    }
+
+    VOY_ARRAY_FOREACH(found_ports) {
+        bool port_found = false;
+        voy_str_t *cur_port = voy_array_get(found_ports, i);
+        voy_str_trim(cur_port);
+        int port_int = atoi(cur_port->string);
+
+        // make sure that there are no duplicates
+        for (unsigned int j = 0; j < server_ports->len; j++) {
+            int *stored_port = voy_array_get(server_ports, j);
+            if (*stored_port == port_int) {
+                port_found = true;
+                break;
+            }
+        }
+
+        if (!port_found) {
+            int *new_port = malloc(sizeof(int));
+            if (new_port) {
+                memset(new_port, 0, sizeof(int));
+                *new_port = port_int;
+                voy_array_push(server_ports, new_port);
+            }
+        }
+    }
+
+    voy_array_free(found_ports, voy_array_strs_free_cb);
+
+    return server_ports;
 }
 
 void voy_array_strs_free_cb(void *value)
