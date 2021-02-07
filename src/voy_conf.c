@@ -167,7 +167,7 @@ voy_conf_t *voy_build_server_conf(voy_array_t *conf_arr)
                 inside_vhost = false;
             }
         }
-        printf("%s", line->string);
+        // printf("%s", line->string);
     }
     return conf;
 }

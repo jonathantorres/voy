@@ -59,6 +59,27 @@ int main(int argc, char **argv)
     if (!conf) {
         // handle error here and exit
     }
+    if (conf && conf->default_server && conf->default_server->ports) {
+        VOY_ARRAY_FOREACH(conf->default_server->ports) {
+            int *n = voy_array_get(conf->default_server->ports, i);
+            printf("found port: %d\n", *n);
+        }
+    }
+
+    if (conf && conf->vhosts) {
+        VOY_ARRAY_FOREACH(conf->vhosts) {
+            voy_server_conf_t *cur_vhost = voy_array_get(conf->vhosts, i);
+
+            if (cur_vhost && cur_vhost->ports) {
+                for (unsigned int j = 0; j < cur_vhost->ports->len; j++) {
+                    int *vhost_port = voy_array_get(cur_vhost->ports, j);
+                    if (vhost_port) {
+                        printf("vhost port: %d\n", *vhost_port);
+                    }
+                }
+            }
+        }
+    }
 
     exit(0); // remove this!
     bool status = voy_server_start(conf);
