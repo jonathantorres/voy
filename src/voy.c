@@ -5,6 +5,7 @@
 
 #include "voy_server.h"
 #include "voy_conf.h"
+#include "voy_log.h"
 
 #define VOY_VERSION "0.1.0"
 #define DEFAULT_PREFIX "/usr/local/voy"
@@ -18,6 +19,7 @@ typedef enum {
     VOY_ARG_ERROR,
 } voy_args_status_t;
 
+void debug_conf(voy_conf_t *conf);
 void voy_print_usage();
 void voy_print_version();
 voy_args_status_t voy_parse_args(int argc, char **argv);
@@ -53,12 +55,66 @@ int main(int argc, char **argv)
             break;
     }
 
-    // TODO: initialize logging mechanism
+    // initialize logging mechanism
+    voy_log_init();
 
     voy_conf_t *conf = voy_conf_load(conf_file_path);
     if (!conf) {
-        // handle error here and exit
+        // TODO: log the error
+        exit(EXIT_FAILURE);
     }
+
+    // just temporary
+    // debug_conf(conf);
+
+    bool status = voy_server_start(conf);
+    if (!status) {
+        // handle error here and exit
+        voy_conf_free(conf);
+        exit(EXIT_FAILURE);
+    }
+
+    voy_conf_free(conf);
+
+    return 0;
+}
+
+voy_args_status_t voy_parse_args(int argc, char **argv)
+{
+    if (argc <= 1) {
+        return VOY_ARG_NONE;
+    }
+
+    for (int i = 1; i < argc; i++) {
+        char *cur_arg = argv[i];
+        if (strcmp(cur_arg, "-v") == 0 || strcmp(cur_arg, "--version") == 0) {
+            return VOY_ARG_VERSION;
+        } else if (strcmp(cur_arg, "-c") == 0 || strcmp(cur_arg, "--config") == 0) {
+            i++;
+            if (argv[i] == NULL) {
+                args_err_msg = "error: configuration file must be specified";
+                return VOY_ARG_ERROR;
+            }
+            conf_file_path = argv[i];
+        } else if (strcmp(cur_arg, "-l") == 0 || strcmp(cur_arg, "--log") == 0) {
+            i++;
+            if (argv[i] == NULL) {
+                args_err_msg = "error: path to the log file must be specified";
+                return VOY_ARG_ERROR;
+            }
+            log_file_path = argv[i];
+        } else {
+            args_err_msg = "error: unknown option";
+            args_err_unknown_arg = cur_arg;
+            return VOY_ARG_ERROR;
+        }
+    }
+
+    return VOY_ARG_OK;
+}
+
+void debug_conf(voy_conf_t *conf)
+{
     if (conf && conf->default_server) {
         if (conf->default_server->ports) {
             VOY_ARRAY_FOREACH(conf->default_server->ports) {
@@ -112,56 +168,7 @@ int main(int argc, char **argv)
             }
         }
     }
-
-    exit(0); // remove this!
-    bool status = voy_server_start(conf);
-    if (!status) {
-        // handle error here and exit
-        exit(1);
-    }
-
-    if (log_file_path) {
-        printf("log file path = %s\n", log_file_path);
-    }
-
-    if (conf_file_path) {
-        printf("conf file path = %s\n", conf_file_path);
-    }
-    return 0;
-}
-
-voy_args_status_t voy_parse_args(int argc, char **argv)
-{
-    if (argc <= 1) {
-        return VOY_ARG_NONE;
-    }
-
-    for (int i = 1; i < argc; i++) {
-        char *cur_arg = argv[i];
-        if (strcmp(cur_arg, "-v") == 0 || strcmp(cur_arg, "--version") == 0) {
-            return VOY_ARG_VERSION;
-        } else if (strcmp(cur_arg, "-c") == 0 || strcmp(cur_arg, "--config") == 0) {
-            i++;
-            if (argv[i] == NULL) {
-                args_err_msg = "error: configuration file must be specified";
-                return VOY_ARG_ERROR;
-            }
-            conf_file_path = argv[i];
-        } else if (strcmp(cur_arg, "-l") == 0 || strcmp(cur_arg, "--log") == 0) {
-            i++;
-            if (argv[i] == NULL) {
-                args_err_msg = "error: path to the log file must be specified";
-                return VOY_ARG_ERROR;
-            }
-            log_file_path = argv[i];
-        } else {
-            args_err_msg = "error: unknown option";
-            args_err_unknown_arg = cur_arg;
-            return VOY_ARG_ERROR;
-        }
-    }
-
-    return VOY_ARG_OK;
+    exit(EXIT_SUCCESS);
 }
 
 void voy_print_version()

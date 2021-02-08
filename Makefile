@@ -4,8 +4,8 @@ SOURCES = $(wildcard src/*.c)
 
 all: voy test
 
-voy: voy.c voy_server.o voy_request.o voy_response.o voy_file.o voy_conf.o voy_htable.o voy_array.o voy_str.o
-	$(CFLAGS) src/voy.c voy_server.o voy_request.o voy_response.o voy_file.o voy_conf.o voy_htable.o voy_array.o voy_str.o -o bin/voy
+voy: voy.c voy_server.o voy_log.o voy_request.o voy_response.o voy_file.o voy_conf.o voy_htable.o voy_array.o voy_str.o
+	$(CFLAGS) src/voy.c voy_server.o voy_log.o voy_request.o voy_response.o voy_file.o voy_conf.o voy_htable.o voy_array.o voy_str.o -o bin/voy
 
 # Tests
 voy_request_test: voy_request_test.c voy_request.o voy_htable.o voy_array.o
@@ -22,6 +22,8 @@ voy_str_test: voy_str_test.c voy_str.o voy_array.o
 # Objects
 voy_server.o: voy_server.c voy_server.h
 	$(CFLAGS) -c src/voy_server.c src/voy_server.h
+voy_log.o: voy_log.c voy_log.h
+	$(CFLAGS) -c src/voy_log.c src/voy_log.h
 voy_request.o: voy_request.c voy_request.h
 	$(CFLAGS) -c src/voy_request.c src/voy_request.h
 voy_response.o: voy_response.c voy_response.h

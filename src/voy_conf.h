@@ -49,4 +49,5 @@ typedef struct {
 } voy_conf_t;
 
 voy_conf_t *voy_conf_load(char *conf_file_path);
+void voy_conf_free(voy_conf_t *conf);
 #endif
