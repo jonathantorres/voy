@@ -392,27 +392,6 @@ voy_array_t *voy_parse_error_pages(voy_array_t *cur_error_pages, voy_str_t *erro
         }
     }
 
-    // voy_str_t *page_file = voy_str_new(error_page_file->string);
-    // if (!page_file) {
-    //     // TODO: log this
-    //     voy_array_free(err_page_pieces, voy_array_strs_free_cb);
-    //     if (!cur_error_pages) {
-    //         voy_array_free(server_error_pages, NULL);
-    //     }
-    //     return NULL;
-    // }
-
-    // int *error_code = malloc(sizeof(int));
-    // if (!error_code) {
-    //     // TODO: log this
-    //     voy_str_free(page_file);
-    //     voy_array_free(err_page_pieces, voy_array_strs_free_cb);
-    //     if (!cur_error_pages) {
-    //         voy_array_free(server_error_pages, NULL);
-    //     }
-    //     return NULL;
-    // }
-    // memset(error_code, 0, sizeof(int));
     int spec_error_code = 0;
 
     if (err_page_pieces->len == 3) {
