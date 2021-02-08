@@ -87,90 +87,110 @@ void voy_serve_404(voy_response_t *res)
     voy_response_set_header(res, "Content-Type", voy_str_dup("text/html"));
 }
 
+void voy_handle_conn(int conn_fd)
+{
+    char *req_buff      = NULL;
+    voy_request_t *req  = NULL;
+    voy_response_t *res = NULL;
+    // for {
+    //     if ((req_buff = voy_new_request_buffer(conn_fd)) == NULL) {
+    //         // TODO: log this
+    //         close(conn_fd);
+    //         continue;
+    //     }
+    // }
+
+    if ((req_buff = voy_new_request_buffer(conn_fd)) == NULL) {
+        // TODO: log this
+        close(conn_fd);
+        return;
+    }
+
+    // if ((req = voy_request_proc_buff(req_buff)) != 0) {
+
+    // }
+
+    // create the request object with the request buffer
+    if ((req = voy_request_new(req_buff)) == NULL) {
+        // TODO: log this
+        close(conn_fd);
+        free(req_buff);
+        return;
+    }
+    free(req_buff);
+
+    // initialize the response object
+    if ((res = voy_response_new()) == NULL) {
+        // TODO: log this
+        voy_request_free(req);
+        close(conn_fd);
+        return;
+    }
+
+    bool file_found = false;
+    file_found      = voy_file_serve(req, res);
+
+    if (!file_found) {
+        voy_serve_404(res);
+    }
+    voy_set_default_response_headers(res);
+
+    char *http_status_line = voy_response_get_start_line(res);
+    char *response_headers = voy_response_get_headers(res);
+    char *response_body    = voy_response_get_body(res);
+
+    if (send(conn_fd, http_status_line, strlen(http_status_line), 0) < 0) {
+        perror("server: send() http status line");
+        // TODO: log this
+        voy_request_free(req);
+        voy_response_free(res);
+        close(conn_fd);
+        return;
+    }
+    if (send(conn_fd, response_headers, strlen(response_headers), 0) < 0) {
+        perror("server: send() http response headers");
+        // TODO: log this
+        voy_request_free(req);
+        voy_response_free(res);
+        close(conn_fd);
+        return;
+    }
+    if (send(conn_fd, response_body, res->body_len, 0) < 0) {
+        perror("server: send() http response body");
+        // TODO: log this
+        voy_request_free(req);
+        voy_response_free(res);
+        close(conn_fd);
+        return;
+    }
+    close(conn_fd);
+    voy_request_free(req);
+    voy_response_free(res);
+}
+
 bool voy_server_start(voy_conf_t *conf)
 {
     if (conf) {} // TODO
     int server_fd, conn_fd;
     int port = VOY_DEFAULT_PORT;
 
-    voy_request_t *req = NULL;
-    voy_response_t *res = NULL;
     if ((server_fd = voy_bind_and_listen(port)) < 0) {
         // TODO: log this
         return false;
     }
     printf("Server running on port %d\n", port);
 
+    // TODO: initialize thread pool
+
     while (true) {
-        char *req_buff = NULL;
         if ((conn_fd = accept(server_fd, (struct sockaddr*) NULL, NULL)) < 0) {
             // TODO: log this
             perror("server: accept()");
             continue;
         }
 
-        if ((req_buff = voy_new_request_buffer(conn_fd)) == NULL) {
-            // TODO: log this
-            close(conn_fd);
-            continue;
-        }
-
-        // create the request object with the request buffer
-        if ((req = voy_request_new(req_buff)) == NULL) {
-            // TODO: log this
-            close(conn_fd);
-            free(req_buff);
-            continue;
-        }
-        free(req_buff);
-
-        // initialize the response object
-        if ((res = voy_response_new()) == NULL) {
-            // TODO: log this
-            voy_request_free(req);
-            close(conn_fd);
-            continue;
-        }
-
-        bool file_found = false;
-        file_found      = voy_file_serve(req, res);
-
-        if (!file_found) {
-            voy_serve_404(res);
-        }
-        voy_set_default_response_headers(res);
-
-        char *http_status_line = voy_response_get_start_line(res);
-        char *response_headers = voy_response_get_headers(res);
-        char *response_body    = voy_response_get_body(res);
-
-        if (send(conn_fd, http_status_line, strlen(http_status_line), 0) < 0) {
-            perror("server: send() http status line");
-            // TODO: log this
-            voy_request_free(req);
-            voy_response_free(res);
-            close(conn_fd);
-            continue;
-        }
-        if (send(conn_fd, response_headers, strlen(response_headers), 0) < 0) {
-            perror("server: send() http response headers");
-            // TODO: log this
-            voy_request_free(req);
-            voy_response_free(res);
-            close(conn_fd);
-            continue;
-        }
-        if (send(conn_fd, response_body, res->body_len, 0) < 0) {
-            perror("server: send() http response body");
-            // TODO: log this
-            voy_request_free(req);
-            voy_response_free(res);
-            close(conn_fd);
-            continue;
-        }
-        close(conn_fd);
-        voy_request_free(req);
-        voy_response_free(res);
+        // TODO: handle this request in it's own thread
+        voy_handle_conn(conn_fd);
     }
     close(server_fd);
     return true;
