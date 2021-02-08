@@ -59,10 +59,25 @@ int main(int argc, char **argv)
     if (!conf) {
         // handle error here and exit
     }
-    if (conf && conf->default_server && conf->default_server->ports) {
-        VOY_ARRAY_FOREACH(conf->default_server->ports) {
-            int *n = voy_array_get(conf->default_server->ports, i);
-            printf("found port: %d\n", *n);
+    if (conf && conf->default_server) {
+        if (conf->default_server->ports) {
+            VOY_ARRAY_FOREACH(conf->default_server->ports) {
+                int *n = voy_array_get(conf->default_server->ports, i);
+                printf("found port: %d\n", *n);
+            }
+        }
+        if (conf->default_server->index_pages) {
+            VOY_ARRAY_FOREACH(conf->default_server->index_pages) {
+                voy_str_t *i_page = voy_array_get(conf->default_server->index_pages, i);
+                printf("found index page: %s\n", i_page->string);
+            }
+        }
+        if (conf->default_server->error_pages) {
+            VOY_ARRAY_FOREACH(conf->default_server->error_pages) {
+                voy_error_page_t *err_page = voy_array_get(conf->default_server->error_pages, i);
+                printf("found error page (code): %d\n", *(err_page->code));
+                printf("found error page (path): %s\n", err_page->page->string);
+            }
         }
     }
 
@@ -70,11 +85,28 @@ int main(int argc, char **argv)
         VOY_ARRAY_FOREACH(conf->vhosts) {
             voy_server_conf_t *cur_vhost = voy_array_get(conf->vhosts, i);
 
-            if (cur_vhost && cur_vhost->ports) {
-                for (unsigned int j = 0; j < cur_vhost->ports->len; j++) {
-                    int *vhost_port = voy_array_get(cur_vhost->ports, j);
-                    if (vhost_port) {
-                        printf("vhost port: %d\n", *vhost_port);
+            if (cur_vhost) {
+                if (cur_vhost->ports) {
+                    for (unsigned int j = 0; j < cur_vhost->ports->len; j++) {
+                        int *vhost_port = voy_array_get(cur_vhost->ports, j);
+                        if (vhost_port) {
+                            printf("vhost port: %d\n", *vhost_port);
+                        }
+                    }
+                }
+                if (cur_vhost->index_pages) {
+                    for (unsigned int j = 0; j < cur_vhost->index_pages->len; j++) {
+                        voy_str_t *vhost_i_page = voy_array_get(cur_vhost->index_pages, j);
+                        if (vhost_i_page) {
+                            printf("vhost index page: %s\n", vhost_i_page->string);
+                        }
+                    }
+                }
+                if (cur_vhost->error_pages) {
+                    VOY_ARRAY_FOREACH(cur_vhost->error_pages) {
+                        voy_error_page_t *err_page = voy_array_get(cur_vhost->error_pages, i);
+                        printf("vhost error page (code): %d\n", *(err_page->code));
+                        printf("vhost error page (path): %s\n", err_page->page->string);
                     }
                 }
             }
