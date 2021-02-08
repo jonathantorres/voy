@@ -3,6 +3,7 @@
 #define VOY_CONF_LINE_BUF_SIZE 1024
 #define VOY_CONF_LINES 50
 
+voy_array_t *voy_parse_index_options(voy_str_t *index_pages);
 voy_array_t *voy_parse_name_options(voy_str_t *names);
 voy_array_t *voy_parse_port_options(voy_str_t *ports);
 voy_array_t *voy_open_and_strip_comments(char *conf_file_path);
@@ -185,7 +186,7 @@ void voy_server_conf_add_option(voy_server_conf_t *conf, voy_str_t *op_name, voy
     } else if (voy_str_equals(op_name, VOY_PORT_OPTION)) {
         conf->ports = voy_parse_port_options(op_value);
     } else if (voy_str_equals(op_name, VOY_INDEX_OPTION)) {
-        // todo
+        conf->index_pages = voy_parse_index_options(op_value);
     } else if (voy_str_equals(op_name, VOY_ERROR_LOG_OPTION)) {
         conf->error_log = voy_str_new(op_value->string);
     } else if (voy_str_equals(op_name, VOY_ACCESS_LOG_OPTION)) {
@@ -328,6 +329,47 @@ voy_array_t *voy_parse_port_options(voy_str_t *ports)
     voy_array_free(found_ports, voy_array_strs_free_cb);
 
     return server_ports;
+}
+
+voy_array_t *voy_parse_index_options(voy_str_t *index_pages)
+{
+    voy_array_t *found_pages = voy_str_split_by_char(index_pages, ',');
+    if (!found_pages) {
+        return NULL;
+    }
+
+    voy_array_t *server_index_pages = voy_array_new(10, sizeof(voy_str_t*));
+    if (!server_index_pages) {
+        voy_array_free(found_pages, voy_array_strs_free_cb);
+        return NULL;
+    }
+
+    VOY_ARRAY_FOREACH(found_pages) {
+        bool page_found = false;
+        voy_str_t *cur_i_page = voy_array_get(found_pages, i);
+
+        // make sure that there are no duplicates
+        for (unsigned int j = 0; j < server_index_pages->len; j++) {
+            voy_str_t *stored_index_page = voy_array_get(server_index_pages, j);
+
+            if (voy_str_equals_voy_str(cur_i_page, stored_index_page)) {
+                page_found = true;
+                break;
+            }
+        }
+
+        if (!page_found) {
+            voy_str_t *new_i_page = voy_str_new(cur_i_page->string);
+            if (new_i_page) {
+                voy_str_trim(new_i_page);
+                voy_array_push(server_index_pages, new_i_page);
+            }
+        }
+    }
+
+    voy_array_free(found_pages, voy_array_strs_free_cb);
+
+    return server_index_pages;
 }
 
 void voy_array_strs_free_cb(void *value)
