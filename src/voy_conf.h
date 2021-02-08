@@ -37,7 +37,7 @@ typedef struct {
 } voy_server_conf_t;
 
 typedef struct {
-    int       code;
+    int       *code;
     voy_str_t *page;
 } voy_error_page_t;
 

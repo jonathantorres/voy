@@ -3,6 +3,8 @@
 #define VOY_CONF_LINE_BUF_SIZE 1024
 #define VOY_CONF_LINES 50
 
+voy_error_page_t *voy_new_error_page(int error_code, char *error_page_file);
+voy_array_t *voy_parse_error_pages(voy_array_t *cur_error_pages, voy_str_t *error_page_name, voy_str_t *error_page_file);
 voy_array_t *voy_parse_index_options(voy_str_t *index_pages);
 voy_array_t *voy_parse_name_options(voy_str_t *names);
 voy_array_t *voy_parse_port_options(voy_str_t *ports);
@@ -194,7 +196,7 @@ void voy_server_conf_add_option(voy_server_conf_t *conf, voy_str_t *op_name, voy
     }
 
     if (voy_str_contains(op_name, VOY_ERROR_PAGE_OPTION)) {
-        // todo
+        conf->error_pages = voy_parse_error_pages(conf->error_pages, op_name, op_value);
     }
 }
 
@@ -370,6 +372,106 @@ voy_array_t *voy_parse_index_options(voy_str_t *index_pages)
     voy_array_free(found_pages, voy_array_strs_free_cb);
 
     return server_index_pages;
+}
+
+voy_array_t *voy_parse_error_pages(voy_array_t *cur_error_pages, voy_str_t *error_page_name, voy_str_t *error_page_file)
+{
+    voy_array_t *err_page_pieces = voy_str_split_by_char(error_page_name, '_');
+    if (!err_page_pieces) {
+        return NULL;
+    }
+
+    voy_array_t *server_error_pages = NULL;
+    if (cur_error_pages) {
+        server_error_pages = cur_error_pages;
+    } else {
+        server_error_pages = voy_array_new(10, sizeof(voy_error_page_t*));
+        if (!server_error_pages) {
+            voy_array_free(err_page_pieces, voy_array_strs_free_cb);
+            return NULL;
+        }
+    }
+
+    // voy_str_t *page_file = voy_str_new(error_page_file->string);
+    // if (!page_file) {
+    //     // TODO: log this
+    //     voy_array_free(err_page_pieces, voy_array_strs_free_cb);
+    //     if (!cur_error_pages) {
+    //         voy_array_free(server_error_pages, NULL);
+    //     }
+    //     return NULL;
+    // }
+
+    // int *error_code = malloc(sizeof(int));
+    // if (!error_code) {
+    //     // TODO: log this
+    //     voy_str_free(page_file);
+    //     voy_array_free(err_page_pieces, voy_array_strs_free_cb);
+    //     if (!cur_error_pages) {
+    //         voy_array_free(server_error_pages, NULL);
+    //     }
+    //     return NULL;
+    // }
+    // memset(error_code, 0, sizeof(int));
+    int spec_error_code = 0;
+
+    if (err_page_pieces->len == 3) {
+        // specifying a code for the error page
+        voy_str_t *str_error_code  = voy_array_get(err_page_pieces, 2);
+        spec_error_code = atoi(str_error_code->string);
+    } else if (err_page_pieces->len == 2) {
+        // a general error page for all error codes
+        // nothing to do here :)
+    } else {
+        // TODO: log this? this shouldn't happen!
+    }
+
+    voy_error_page_t *error_page = voy_new_error_page(spec_error_code, error_page_file->string);
+    if (!error_page) {
+        // TODO: log this!
+        voy_array_free(err_page_pieces, voy_array_strs_free_cb);
+        if (!cur_error_pages) {
+            voy_array_free(server_error_pages, NULL);
+        }
+        return NULL;
+    }
+    voy_array_push(server_error_pages, error_page);
+
+    return server_error_pages;
+}
+
+voy_error_page_t *voy_new_error_page(int error_code, char *error_page_file)
+{
+    if (error_code < 0 || !error_page_file) {
+        return NULL;
+    }
+
+    voy_str_t *page_file = voy_str_new(error_page_file);
+    if (!page_file) {
+        // TODO: log this
+        return NULL;
+    }
+
+    int *page_error_code = malloc(sizeof(int));
+    if (!page_error_code) {
+        // TODO: log this
+        return NULL;
+    }
+    memset(page_error_code, 0, sizeof(int));
+    *page_error_code = error_code;
+
+    voy_error_page_t *error_page = malloc(sizeof(voy_error_page_t));
+    if (!error_page) {
+        free(page_error_code);
+        voy_str_free(page_file);
+        return NULL;
+    }
+    memset(error_page, 0, sizeof(voy_error_page_t));
+
+    error_page->code = page_error_code;
+    error_page->page = page_file;
+
+    return error_page;
 }
 
 void voy_array_strs_free_cb(void *value)
