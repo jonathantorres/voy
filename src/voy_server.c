@@ -1,25 +1,13 @@
 #include "voy_server.h"
 
-void *voy_new_request_buffer(int conn_fd)
+void *voy_new_request_buffer()
 {
-    int bytes_r = 0;
-    char *recv_buff = NULL;
-
-    recv_buff = malloc(VOY_RECV_BUFF_LEN);
-    if (recv_buff == NULL) {
+    char *recv_buff = malloc(VOY_RECV_BUFF_LEN);
+    if (!recv_buff) {
         // TODO: log this
         return NULL;
     }
     memset(recv_buff, 0, VOY_RECV_BUFF_LEN);
-
-    bytes_r = recv(conn_fd, recv_buff, VOY_RECV_BUFF_LEN, 0);
-    if (bytes_r < 0) {
-        // TODO: log this
-        perror("Error: recv()");
-        free(recv_buff);
-        return NULL;
-    }
-    recv_buff[bytes_r-1] = '\0';
 
     return recv_buff;
 }
@@ -89,38 +77,72 @@ void voy_serve_404(voy_response_t *res)
 
 void voy_handle_conn(int conn_fd)
 {
-    char *req_buff      = NULL;
-    voy_request_t *req  = NULL;
-    voy_response_t *res = NULL;
-    // for {
-    //     if ((req_buff = voy_new_request_buffer(conn_fd)) == NULL) {
-    //         // TODO: log this
-    //         close(conn_fd);
-    //         continue;
-    //     }
-    // }
+    voy_request_t *req = voy_request_new();
+    bool status        = true;
 
-    if ((req_buff = voy_new_request_buffer(conn_fd)) == NULL) {
+    if (!req) {
         // TODO: log this
         close(conn_fd);
         return;
     }
 
-    // if ((req = voy_request_proc_buff(req_buff)) != 0) {
+    while (true) {
+        if (req->done_reading) {
+            break;
+        }
 
-    // }
+        char *req_buff = voy_new_request_buffer();
+        if (!req_buff) {
+            // TODO: log this
+            status = false;
+            close(conn_fd);
+            break;
+        }
 
-    // create the request object with the request buffer
-    if ((req = voy_request_new(req_buff)) == NULL) {
-        // TODO: log this
-        close(conn_fd);
-        free(req_buff);
-        return;
+        int bytes_r = recv(conn_fd, req_buff, VOY_RECV_BUFF_LEN, 0);
+        if (bytes_r < 0) {
+            // TODO: log this
+            status = false;
+            close(conn_fd);
+            perror("Error: recv()");
+            free(req_buff);
+            break;
+        }
+        req_buff[bytes_r-1] = '\0';
+
+        if (!req->line_is_read) {
+            status = voy_request_parse_start_line(req, req_buff);
+            if (!status) {
+                // TODO: log this
+                free(req_buff);
+                close(conn_fd);
+                break;
+            }
+        }
+
+        if (!req->headers_are_read) {
+            status = voy_request_parse_headers(req, req_buff);
+            if (!status) {
+                // TODO: log this
+                free(req_buff);
+                close(conn_fd);
+                break;
+            }
+        }
+
+        if (!req->body_is_read) {
+            status = voy_request_parse_body(req, req_buff);
+            if (!status) {
+                // TODO: log this
+                free(req_buff);
+                close(conn_fd);
+                break;
+            }
+        }
     }
-    free(req_buff);
 
-    // initialize the response object
-    if ((res = voy_response_new()) == NULL) {
+    voy_response_t *res = voy_response_new();
+    if (!res) {
         // TODO: log this
         voy_request_free(req);
         close(conn_fd);

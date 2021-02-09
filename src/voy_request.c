@@ -5,7 +5,7 @@ int voy_htable_compare_fn(void *a, void *b)
     return strcmp((char*)a, (char*)b);
 }
 
-void voy_parse_request_start_line(char *buffer, voy_request_t *req)
+bool voy_request_parse_start_line(voy_request_t *req, char *buffer)
 {
     char *buf;
     char *req_method, *req_method_p;
@@ -53,10 +53,20 @@ void voy_parse_request_start_line(char *buffer, voy_request_t *req)
 
     req->method = req_method;
     req->uri = req_uri;
+    req->line_is_read = true;
+
+    if (strcmp(req->method, "GET") == 0 || strcmp(req->method, "HEAD") == 0) {
+        req->body_is_read = true;
+    }
+    return true;
 }
 
-void voy_parse_request_headers(char *buffer, voy_request_t *req)
+bool voy_request_parse_headers(voy_request_t *req, char *buffer)
 {
+    if (req && !req->line_is_read) {
+        return true;
+    }
+
     char *buf;
     int i = 0;
     int num_of_newlines = 0;
@@ -65,7 +75,7 @@ void voy_parse_request_headers(char *buffer, voy_request_t *req)
     char *cur_line = malloc(line_length);
 
     if (!cur_line) {
-        return;
+        return false;
     }
 
     memset(cur_line, 0, line_length);
@@ -85,7 +95,7 @@ void voy_parse_request_headers(char *buffer, voy_request_t *req)
                 if (isalnum(*(buf + 1))) {
                     cur_line = malloc(line_length);
                     if (!cur_line) {
-                        return;
+                        return false;
                     }
                     memset(cur_line, 0, line_length);
                     voy_array_push(header_lines, cur_line);
@@ -125,10 +135,10 @@ void voy_parse_request_headers(char *buffer, voy_request_t *req)
         char *val = malloc(value_len + 1);
 
         if (!key) {
-            return;
+            return false;
         }
         if (!val) {
-            return;
+            return false;
         }
         memset(key, 0, key_len + 1);
         memset(val, 0, value_len + 1);
@@ -165,10 +175,23 @@ void voy_parse_request_headers(char *buffer, voy_request_t *req)
         }
     }
     voy_array_free(header_lines, NULL);
+
+    req->headers_are_read = true;
+
+    if (strcmp(req->method, "GET") == 0 || strcmp(req->method, "HEAD") == 0) {
+        req->headers_are_read = true;
+        req->body_is_read = true;
+        req->done_reading = true;
+    }
+    return true;
 }
 
-void voy_parse_request_body(char *buffer, voy_request_t *req)
+bool voy_request_parse_body(voy_request_t *req, char *buffer)
 {
+    if (req && (!req->line_is_read || !req->headers_are_read || req->body_is_read || req->done_reading)) {
+        return true;
+    }
+
     size_t i;
     size_t body_start_i = 0;
     char *body = NULL;
@@ -192,12 +215,15 @@ void voy_parse_request_body(char *buffer, voy_request_t *req)
                 memcpy(body, &buffer[body_start_i], content_len - 1);
                 body[content_len - 1] = '\0';
                 req->body = body;
+                req->body_is_read = true;
+                req->done_reading = true;
             }
         }
     }
+    return true;
 }
 
-voy_request_t *voy_request_new(char *buffer)
+voy_request_t *voy_request_new()
 {
     voy_request_t *req = malloc(sizeof(voy_request_t));
 
@@ -210,6 +236,11 @@ voy_request_t *voy_request_new(char *buffer)
     req->body = NULL;
     req->headers = NULL;
     req->uri_params = NULL;
+    req->done_reading = false;
+    req->line_is_read = false;
+    req->headers_are_read = false;
+    req->body_is_read = false;
+    req->total_body_bytes_read = 0;
 
     voy_htable_t *headers_p = voy_htable_new(voy_htable_compare_fn);
     if (headers_p == NULL) {
@@ -225,10 +256,6 @@ voy_request_t *voy_request_new(char *buffer)
 
     req->headers = headers_p;
     req->uri_params = uri_params_p;
-
-    voy_parse_request_start_line(buffer, req);
-    voy_parse_request_headers(buffer, req);
-    voy_parse_request_body(buffer, req);
 
     return req;
 }
