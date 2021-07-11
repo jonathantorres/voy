@@ -55,9 +55,12 @@ int main(int argc, char **argv)
             break;
     }
 
-    // initialize logging mechanism
+    // TODO: initialize logging mechanism
     voy_log_init();
 
+    // TODO: figure out which path to use for the configuration file
+    // either from the -conf option, or configured from the build
+    // the -conf option would override any location set in the build
     voy_conf_t *conf = voy_conf_load(conf_file_path);
     if (!conf) {
         // TODO: log the error
@@ -67,6 +70,9 @@ int main(int argc, char **argv)
     // just temporary
     // debug_conf(conf);
 
+    // TODO: Handle signals that will tell the server to
+    // reload the configuration files (HUP)
+    // or to gracefully shutdown (TERM, INT, QUIT)
     bool status = voy_server_start(conf);
     if (!status) {
         // handle error here and exit
