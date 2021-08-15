@@ -16,7 +16,9 @@ typedef enum {
     VOY_ARG_NONE,
     VOY_ARG_VERSION,
     VOY_ARG_OK,
-    VOY_ARG_ERROR,
+    VOY_ARG_ERR_LOG_FILE,
+    VOY_ARG_ERR_CONF_FILE,
+    VOY_ARG_ERR_UNKNOWN,
 } voy_args_status_t;
 
 void debug_conf(voy_conf_t *conf);
@@ -26,7 +28,6 @@ voy_args_status_t voy_parse_args(int argc, char **argv);
 
 static char *log_file_path = NULL;
 static char *conf_file_path = NULL;
-static char *args_err_msg = NULL;
 static char *args_err_unknown_arg = NULL;
 
 int main(int argc, char **argv)
@@ -42,11 +43,16 @@ int main(int argc, char **argv)
         case VOY_ARG_VERSION:
             voy_print_version();
             break;
-        case VOY_ARG_ERROR:
-            if (args_err_msg == NULL) {
-                args_err_msg = "error: unknown error";
-            }
-            fprintf(stderr, "%s", args_err_msg);
+        case VOY_ARG_ERR_LOG_FILE:
+            fprintf(stderr, "%s", "error: path to the log file must be specified\n");
+            voy_print_usage();
+            break;
+        case VOY_ARG_ERR_CONF_FILE:
+            fprintf(stderr, "%s", "error: configuration file must be specified\n");
+            voy_print_usage();
+            break;
+        case VOY_ARG_ERR_UNKNOWN:
+            fprintf(stderr, "%s", "error: unknown error");
             if (args_err_unknown_arg) {
                 fprintf(stderr, " %s", args_err_unknown_arg);
             }
@@ -101,21 +107,18 @@ voy_args_status_t voy_parse_args(int argc, char **argv)
         } else if (strcmp(cur_arg, "-c") == 0 || strcmp(cur_arg, "--config") == 0) {
             i++;
             if (argv[i] == NULL) {
-                args_err_msg = "error: configuration file must be specified";
-                return VOY_ARG_ERROR;
+                return VOY_ARG_ERR_CONF_FILE;
             }
             conf_file_path = argv[i];
         } else if (strcmp(cur_arg, "-l") == 0 || strcmp(cur_arg, "--log") == 0) {
             i++;
             if (argv[i] == NULL) {
-                args_err_msg = "error: path to the log file must be specified";
-                return VOY_ARG_ERROR;
+                return VOY_ARG_ERR_LOG_FILE;
             }
             log_file_path = argv[i];
         } else {
-            args_err_msg = "error: unknown option";
             args_err_unknown_arg = cur_arg;
-            return VOY_ARG_ERROR;
+            return VOY_ARG_ERR_UNKNOWN;
         }
     }
 
