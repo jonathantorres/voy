@@ -34,6 +34,9 @@ int main(int argc, char **argv)
     voy_args_status_t args_status = voy_parse_args(argc, argv);
     switch (args_status) {
         case VOY_ARG_NONE:
+            // no arguments passed, should we run on the background?
+            // we have to load the configuration file
+            // from whatever location is configured to use
             voy_print_usage();
             break;
         case VOY_ARG_VERSION:
