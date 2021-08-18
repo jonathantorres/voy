@@ -1,5 +1,4 @@
-*.sublime-project
-*.sublime-workspace
+*.code-workspace
 *.out
 *.o
 *.h.gch
