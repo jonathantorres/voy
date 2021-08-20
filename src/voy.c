@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <signal.h>
 
 #include "voy_server.h"
 #include "voy_conf.h"
@@ -24,6 +25,7 @@ typedef enum {
 void debug_conf(voy_conf_t *conf);
 void voy_print_usage();
 void voy_print_version();
+void handle_signals();
 voy_args_status_t voy_parse_args(int argc, char **argv);
 
 static char *log_file_path = NULL;
@@ -82,6 +84,8 @@ int main(int argc, char **argv)
     // TODO: Handle signals that will tell the server to
     // reload the configuration files (HUP)
     // or to gracefully shutdown (TERM, INT, QUIT)
+    handle_signals();
+
     bool status = voy_server_start(conf);
     if (!status) {
         // handle error here and exit
@@ -92,6 +96,51 @@ int main(int argc, char **argv)
     voy_conf_free(conf);
 
     return 0;
+}
+
+void sig_handler(int signum)
+{
+    switch (signum)
+    {
+    case SIGTERM:
+    case SIGINT:
+    case SIGQUIT:
+        puts("shutting down the server");
+        exit(EXIT_SUCCESS);
+        break;
+    case SIGHUP:
+        puts("reload configuration file");
+        break;
+    }
+}
+
+void handle_signals()
+{
+    struct sigaction *act = malloc(sizeof(struct sigaction));
+    if (!act) {
+        // TODO: log this error
+        return;
+    }
+    memset(act, 0, sizeof(struct sigaction));
+    act->sa_handler = sig_handler;
+    sigemptyset(&act->sa_mask);
+    act->sa_flags = SA_RESTART;
+
+    // server shutdown signals
+    if (sigaction(SIGTERM, act, NULL) == -1) {
+        // TODO: log the error
+    }
+    if (sigaction(SIGINT, act, NULL) == -1) {
+        // TODO: log the error
+    }
+    if (sigaction(SIGQUIT, act, NULL) == -1) {
+        // TODO: log the error
+    }
+
+    // server restart signal
+    if (sigaction(SIGHUP, act, NULL) == -1) {
+        // TODO: log the error
+    }
 }
 
 voy_args_status_t voy_parse_args(int argc, char **argv)
