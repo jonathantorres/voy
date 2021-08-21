@@ -116,29 +116,24 @@ void sig_handler(int signum)
 
 void handle_signals()
 {
-    struct sigaction *act = malloc(sizeof(struct sigaction));
-    if (!act) {
-        // TODO: log this error
-        return;
-    }
-    memset(act, 0, sizeof(struct sigaction));
-    act->sa_handler = sig_handler;
-    sigemptyset(&act->sa_mask);
-    act->sa_flags = SA_RESTART;
+    struct sigaction act;
+    act.sa_handler = sig_handler;
+    sigemptyset(&act.sa_mask);
+    act.sa_flags = SA_RESTART;
 
     // server shutdown signals
-    if (sigaction(SIGTERM, act, NULL) == -1) {
+    if (sigaction(SIGTERM, &act, NULL) == -1) {
         // TODO: log the error
     }
-    if (sigaction(SIGINT, act, NULL) == -1) {
+    if (sigaction(SIGINT, &act, NULL) == -1) {
         // TODO: log the error
     }
-    if (sigaction(SIGQUIT, act, NULL) == -1) {
+    if (sigaction(SIGQUIT, &act, NULL) == -1) {
         // TODO: log the error
     }
 
     // server restart signal
-    if (sigaction(SIGHUP, act, NULL) == -1) {
+    if (sigaction(SIGHUP, &act, NULL) == -1) {
         // TODO: log the error
     }
 }
