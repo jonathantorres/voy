@@ -105,11 +105,10 @@ void sig_handler(int signum)
     case SIGTERM:
     case SIGINT:
     case SIGQUIT:
-        puts("shutting down the server");
-        exit(EXIT_SUCCESS);
+        voy_server_shutdown();
         break;
     case SIGHUP:
-        puts("reload configuration file");
+        voy_conf_reload();
         break;
     }
 }

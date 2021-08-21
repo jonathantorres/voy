@@ -217,3 +217,9 @@ bool voy_server_start(voy_conf_t *conf)
     close(server_fd);
     return true;
 }
+
+bool voy_server_shutdown()
+{
+    puts("shutting down the server");
+    exit(EXIT_SUCCESS);
+}

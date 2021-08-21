@@ -43,6 +43,11 @@ voy_conf_t *voy_conf_load(char *conf_file_path)
     return conf;
 }
 
+void voy_conf_reload()
+{
+    puts("reload configuration file");
+}
+
 voy_array_t *voy_open_and_strip_comments(char *conf_file_path)
 {
     FILE *fp = fopen(conf_file_path, "r");

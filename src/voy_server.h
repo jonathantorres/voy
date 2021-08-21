@@ -23,4 +23,5 @@
 #define VOY_RECV_BUFF_LEN 1000000
 
 bool voy_server_start(voy_conf_t *conf);
+bool voy_server_shutdown();
 #endif
