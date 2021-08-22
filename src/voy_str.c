@@ -1,6 +1,6 @@
 #include "voy_str.h"
 
-static char *_create_string(char *chars)
+static char *create_string(char *chars)
 {
     int len = strlen(chars);
     char *string = malloc(len+1);
@@ -16,7 +16,7 @@ static char *_create_string(char *chars)
     return string;
 }
 
-static char *_concat_chars(char *cur_str, char *chars)
+static char *concat_chars(char *cur_str, char *chars)
 {
     unsigned long chars_len = strlen(chars);
     if (chars_len == 0) {
@@ -53,7 +53,7 @@ voy_str_t *voy_str_new(char *chars)
     str->string = NULL;
     str->start_p = NULL;
     if (!chars) {
-        char *empty_str = _create_string("");
+        char *empty_str = create_string("");
         if (!empty_str) {
             free(str);
             return NULL;
@@ -64,7 +64,7 @@ voy_str_t *voy_str_new(char *chars)
     }
 
     str->len = strlen(chars);
-    str->string = _create_string(chars);
+    str->string = create_string(chars);
     str->start_p = str->string;
     return str;
 }
@@ -108,7 +108,7 @@ voy_str_t *voy_str_concat_voy_str(voy_str_t *str, voy_str_t *chars)
     }
     unsigned long chars_len = strlen(chars->string);
 
-    str->string = _concat_chars(str->string, chars->string);
+    str->string = concat_chars(str->string, chars->string);
     str->start_p = str->string;
     str->len += chars_len;
 
@@ -122,7 +122,7 @@ voy_str_t *voy_str_concat(voy_str_t *str, char *chars)
     }
     unsigned long chars_len = strlen(chars);
 
-    str->string = _concat_chars(str->string, chars);
+    str->string = concat_chars(str->string, chars);
     str->start_p = str->string;
     str->len += chars_len;
 
@@ -138,7 +138,7 @@ char *voy_str_dup(char *str)
     if (len == 0) {
         return NULL;
     }
-    return _create_string(str);
+    return create_string(str);
 }
 
 voy_str_t *voy_str_dup_str(voy_str_t *str)

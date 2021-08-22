@@ -1,6 +1,6 @@
 #include "voy_server.h"
 
-void *voy_new_request_buffer()
+static void *voy_new_request_buffer()
 {
     char *recv_buff = malloc(VOY_RECV_BUFF_LEN);
     if (!recv_buff) {
@@ -12,7 +12,7 @@ void *voy_new_request_buffer()
     return recv_buff;
 }
 
-int voy_bind_and_listen(int port)
+static int voy_bind_and_listen(int port)
 {
     int server_fd;
     struct sockaddr_in server_addr;
@@ -57,13 +57,13 @@ int voy_bind_and_listen(int port)
     return server_fd;
 }
 
-void voy_set_default_response_headers(voy_response_t *res)
+static void voy_set_default_response_headers(voy_response_t *res)
 {
     voy_response_set_header(res, "Server", voy_str_dup("voy v0.0.1"));
     voy_response_set_header(res, "Connection", voy_str_dup("close"));
 }
 
-void voy_serve_404(voy_response_t *res)
+static void voy_serve_404(voy_response_t *res)
 {
     char *not_found_msg = "Not found\n";
     char not_found_len_str[3] = {0, 0, 0};
@@ -75,7 +75,7 @@ void voy_serve_404(voy_response_t *res)
     voy_response_set_header(res, "Content-Type", voy_str_dup("text/html"));
 }
 
-void voy_handle_conn(int conn_fd)
+static void voy_handle_conn(int conn_fd)
 {
     voy_request_t *req = voy_request_new();
     bool status        = true;

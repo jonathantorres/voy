@@ -3,21 +3,21 @@
 #define VOY_CONF_LINE_BUF_SIZE 1024
 #define VOY_CONF_LINES 50
 
-voy_error_page_t *voy_new_error_page(int error_code, char *error_page_file);
-voy_array_t *voy_parse_error_pages(voy_array_t *cur_error_pages, voy_str_t *error_page_name, voy_str_t *error_page_file);
-voy_array_t *voy_parse_index_options(voy_str_t *index_pages);
-voy_array_t *voy_parse_name_options(voy_str_t *names);
-voy_array_t *voy_parse_port_options(voy_str_t *ports);
-voy_array_t *voy_open_and_strip_comments(char *conf_file_path);
-voy_array_t *voy_parse_includes(voy_array_t *conf_arr);
-voy_conf_t *voy_build_server_conf(voy_array_t *conf_arr);
-voy_server_conf_t *voy_server_conf_new();
-char *voy_strip_comment_from_line(char *line);
-bool voy_check_for_syntax_errors(voy_array_t *conf_arr);
-void voy_server_conf_add_option(voy_server_conf_t *conf, voy_str_t *op_name, voy_str_t *op_value);
-void voy_conf_add_option(voy_conf_t *conf, voy_str_t *op_name, voy_str_t *op_value);
-void voy_conf_add_vhost(voy_conf_t *conf, voy_server_conf_t *vhost);
-void voy_array_strs_free_cb(void *value);
+static voy_error_page_t *voy_new_error_page(int error_code, char *error_page_file);
+static voy_array_t *voy_parse_error_pages(voy_array_t *cur_error_pages, voy_str_t *error_page_name, voy_str_t *error_page_file);
+static voy_array_t *voy_parse_index_options(voy_str_t *index_pages);
+static voy_array_t *voy_parse_name_options(voy_str_t *names);
+static voy_array_t *voy_parse_port_options(voy_str_t *ports);
+static voy_array_t *voy_open_and_strip_comments(char *conf_file_path);
+static voy_array_t *voy_parse_includes(voy_array_t *conf_arr);
+static voy_conf_t *voy_build_server_conf(voy_array_t *conf_arr);
+static voy_server_conf_t *voy_server_conf_new();
+static char *voy_strip_comment_from_line(char *line);
+static bool voy_check_for_syntax_errors(voy_array_t *conf_arr);
+static void voy_server_conf_add_option(voy_server_conf_t *conf, voy_str_t *op_name, voy_str_t *op_value);
+static void voy_conf_add_option(voy_conf_t *conf, voy_str_t *op_name, voy_str_t *op_value);
+static void voy_conf_add_vhost(voy_conf_t *conf, voy_server_conf_t *vhost);
+static void voy_array_strs_free_cb(void *value);
 
 voy_conf_t *voy_conf_load(char *conf_file_path)
 {
@@ -48,7 +48,7 @@ void voy_conf_reload()
     puts("reload configuration file");
 }
 
-voy_array_t *voy_open_and_strip_comments(char *conf_file_path)
+static voy_array_t *voy_open_and_strip_comments(char *conf_file_path)
 {
     FILE *fp = fopen(conf_file_path, "r");
     if (!fp) {
@@ -95,7 +95,7 @@ voy_array_t *voy_open_and_strip_comments(char *conf_file_path)
     return conf_file_lines;
 }
 
-char *voy_strip_comment_from_line(char *line)
+static char *voy_strip_comment_from_line(char *line)
 {
     size_t len = strlen(line);
     int comment_index = -1;
@@ -113,18 +113,18 @@ char *voy_strip_comment_from_line(char *line)
     return line;
 }
 
-voy_array_t *voy_parse_includes(voy_array_t *conf_arr)
+static voy_array_t *voy_parse_includes(voy_array_t *conf_arr)
 {
     return conf_arr;
 }
 
-bool voy_check_for_syntax_errors(voy_array_t *conf_arr)
+static bool voy_check_for_syntax_errors(voy_array_t *conf_arr)
 {
     if (conf_arr) {}
     return true;
 }
 
-voy_conf_t *voy_build_server_conf(voy_array_t *conf_arr)
+static voy_conf_t *voy_build_server_conf(voy_array_t *conf_arr)
 {
     if (!conf_arr) {
         return NULL;
@@ -184,7 +184,7 @@ voy_conf_t *voy_build_server_conf(voy_array_t *conf_arr)
     return conf;
 }
 
-void voy_server_conf_add_option(voy_server_conf_t *conf, voy_str_t *op_name, voy_str_t *op_value)
+static void voy_server_conf_add_option(voy_server_conf_t *conf, voy_str_t *op_name, voy_str_t *op_value)
 {
     if (!conf) {
         return;
@@ -209,7 +209,7 @@ void voy_server_conf_add_option(voy_server_conf_t *conf, voy_str_t *op_name, voy
     }
 }
 
-void voy_conf_add_option(voy_conf_t *conf, voy_str_t *op_name, voy_str_t *op_value)
+static void voy_conf_add_option(voy_conf_t *conf, voy_str_t *op_name, voy_str_t *op_value)
 {
     if (!conf) {
         return;
@@ -227,7 +227,7 @@ void voy_conf_add_option(voy_conf_t *conf, voy_str_t *op_name, voy_str_t *op_val
     }
 }
 
-voy_server_conf_t *voy_server_conf_new()
+static voy_server_conf_t *voy_server_conf_new()
 {
     voy_server_conf_t *conf = malloc(sizeof(voy_server_conf_t));
     if (!conf) {
@@ -246,7 +246,7 @@ voy_server_conf_t *voy_server_conf_new()
     return conf;
 }
 
-void voy_conf_add_vhost(voy_conf_t *conf, voy_server_conf_t *vhost)
+static void voy_conf_add_vhost(voy_conf_t *conf, voy_server_conf_t *vhost)
 {
     if (!conf || !vhost) {
         return;
@@ -258,7 +258,7 @@ void voy_conf_add_vhost(voy_conf_t *conf, voy_server_conf_t *vhost)
     voy_array_push(conf->vhosts, vhost);
 }
 
-voy_array_t *voy_parse_name_options(voy_str_t *names)
+static voy_array_t *voy_parse_name_options(voy_str_t *names)
 {
     voy_array_t *found_names = voy_str_split_by_char(names, ',');
     if (!found_names) {
@@ -299,7 +299,7 @@ voy_array_t *voy_parse_name_options(voy_str_t *names)
     return server_names;
 }
 
-voy_array_t *voy_parse_port_options(voy_str_t *ports)
+static voy_array_t *voy_parse_port_options(voy_str_t *ports)
 {
     voy_array_t *found_ports = voy_str_split_by_char(ports, ',');
     if (!found_ports) {
@@ -342,7 +342,7 @@ voy_array_t *voy_parse_port_options(voy_str_t *ports)
     return server_ports;
 }
 
-voy_array_t *voy_parse_index_options(voy_str_t *index_pages)
+static voy_array_t *voy_parse_index_options(voy_str_t *index_pages)
 {
     voy_array_t *found_pages = voy_str_split_by_char(index_pages, ',');
     if (!found_pages) {
@@ -383,7 +383,7 @@ voy_array_t *voy_parse_index_options(voy_str_t *index_pages)
     return server_index_pages;
 }
 
-voy_array_t *voy_parse_error_pages(voy_array_t *cur_error_pages, voy_str_t *error_page_name, voy_str_t *error_page_file)
+static voy_array_t *voy_parse_error_pages(voy_array_t *cur_error_pages, voy_str_t *error_page_name, voy_str_t *error_page_file)
 {
     voy_array_t *err_page_pieces = voy_str_split_by_char(error_page_name, '_');
     if (!err_page_pieces) {
@@ -428,7 +428,7 @@ voy_array_t *voy_parse_error_pages(voy_array_t *cur_error_pages, voy_str_t *erro
     return server_error_pages;
 }
 
-voy_error_page_t *voy_new_error_page(int error_code, char *error_page_file)
+static voy_error_page_t *voy_new_error_page(int error_code, char *error_page_file)
 {
     if (error_code < 0 || !error_page_file) {
         return NULL;
@@ -468,7 +468,7 @@ void voy_conf_free(voy_conf_t *conf)
     // TODO: cleanup everything about the configuration file
 }
 
-void voy_array_strs_free_cb(void *value)
+static void voy_array_strs_free_cb(void *value)
 {
     if (value) {
         voy_str_free((voy_str_t*)value);

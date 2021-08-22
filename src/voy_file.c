@@ -48,14 +48,14 @@ static voy_content_type_t content_types[VOY_CONTENT_TYPES_LEN] = {
     { "woff2", "font/woff2", VOY_FILE_TYPE_BINARY },
 };
 
-size_t _voy_get_binary_file_contents_len(int fd)
+static size_t voy_get_binary_file_contents_len(int fd)
 {
     size_t len = (size_t)lseek(fd, (off_t)0, SEEK_END);
     lseek(fd, (off_t)0, SEEK_SET);
     return len;
 }
 
-size_t _voy_get_text_file_contents_len(FILE *fp)
+static size_t voy_get_text_file_contents_len(FILE *fp)
 {
     size_t len = 0;
     int c;
@@ -65,7 +65,7 @@ size_t _voy_get_text_file_contents_len(FILE *fp)
     return len;
 }
 
-char *_voy_set_binary_file_contents(int fd, size_t contents_len)
+static char *voy_set_binary_file_contents(int fd, size_t contents_len)
 {
     char *contents = NULL;
     long bytes_r;
@@ -82,7 +82,7 @@ char *_voy_set_binary_file_contents(int fd, size_t contents_len)
     return contents;
 }
 
-char *_voy_set_text_file_contents(FILE *fp, size_t contents_len)
+static char *voy_set_text_file_contents(FILE *fp, size_t contents_len)
 {
     char *contents = NULL;
     char *contents_p = NULL;
@@ -103,7 +103,7 @@ char *_voy_set_text_file_contents(FILE *fp, size_t contents_len)
     return contents;
 }
 
-char *_voy_get_content_len_str(size_t contents_len)
+static char *voy_get_content_len_str(size_t contents_len)
 {
     int content_len_str_len = 12;
     char *content_len_str = malloc(content_len_str_len);
@@ -115,7 +115,7 @@ char *_voy_get_content_len_str(size_t contents_len)
     return content_len_str;
 }
 
-char *_voy_get_file_path(voy_request_t *req)
+static char *voy_get_file_path(voy_request_t *req)
 {
     char *uri = NULL;
     char *uri_p = NULL;
@@ -158,7 +158,7 @@ char *_voy_get_file_path(voy_request_t *req)
     return file_to_serve;
 }
 
-char *_voy_get_file_ext(char *uri)
+static char *voy_get_file_ext(char *uri)
 {
     size_t uri_len = strlen(uri);
     size_t dot_loc = 0;
@@ -187,7 +187,7 @@ char *_voy_get_file_ext(char *uri)
     return file_ext;
 }
 
-voy_content_type_t *_voy_get_content_type_struct(char *file_ext)
+static voy_content_type_t *voy_get_content_type_struct(char *file_ext)
 {
     voy_content_type_t *found_content_type = NULL;
 
@@ -199,11 +199,11 @@ voy_content_type_t *_voy_get_content_type_struct(char *file_ext)
     return found_content_type;
 }
 
-void _voy_serve_file(voy_request_t *req, voy_response_t *res, char *contents, size_t contents_len)
+static void voy_serve_file(voy_request_t *req, voy_response_t *res, char *contents, size_t contents_len)
 {
-    char *file_ext = _voy_get_file_ext(req->uri);
-    voy_content_type_t *cur_content_type = _voy_get_content_type_struct(file_ext);
-    char *content_len_str = _voy_get_content_len_str(contents_len);
+    char *file_ext = voy_get_file_ext(req->uri);
+    voy_content_type_t *cur_content_type = voy_get_content_type_struct(file_ext);
+    char *content_len_str = voy_get_content_len_str(contents_len);
 
     voy_response_set_status_code(res, 200);
     voy_response_set_header(res, "Content-Length", voy_str_dup(content_len_str));
@@ -217,13 +217,13 @@ void _voy_serve_file(voy_request_t *req, voy_response_t *res, char *contents, si
 
 bool voy_file_serve(voy_request_t *req, voy_response_t *res)
 {
-    char *file_to_serve = _voy_get_file_path(req);
+    char *file_to_serve = voy_get_file_path(req);
     if (!file_to_serve) {
         return false;
     }
 
-    char *file_ext = _voy_get_file_ext(req->uri);
-    voy_content_type_t *cur_content_type = _voy_get_content_type_struct(file_ext);
+    char *file_ext = voy_get_file_ext(req->uri);
+    voy_content_type_t *cur_content_type = voy_get_content_type_struct(file_ext);
     char *contents = NULL;
     size_t contents_len;
 
@@ -233,11 +233,11 @@ bool voy_file_serve(voy_request_t *req, voy_response_t *res)
             perror("file opening failed");
             return false;
         }
-        contents_len = _voy_get_binary_file_contents_len(fd);
+        contents_len = voy_get_binary_file_contents_len(fd);
         if (contents_len == 0) {
             return false;
         }
-        contents = _voy_set_binary_file_contents(fd, contents_len);
+        contents = voy_set_binary_file_contents(fd, contents_len);
         if (!contents) {
             return false;
         }
@@ -249,12 +249,12 @@ bool voy_file_serve(voy_request_t *req, voy_response_t *res)
             printf("%s\n", file_to_serve);
             return false;
         }
-        contents_len = _voy_get_text_file_contents_len(fp);
+        contents_len = voy_get_text_file_contents_len(fp);
         if (contents_len == 0) {
             fclose(fp);
             return false;
         }
-        contents = _voy_set_text_file_contents(fp, contents_len);
+        contents = voy_set_text_file_contents(fp, contents_len);
         if (!contents) {
             fclose(fp);
             return false;
@@ -264,7 +264,7 @@ bool voy_file_serve(voy_request_t *req, voy_response_t *res)
         return false;
     }
 
-    _voy_serve_file(req, res, contents, contents_len);
+    voy_serve_file(req, res, contents, contents_len);
 
     free(file_ext);
     free(file_to_serve);

@@ -70,7 +70,7 @@ static char *raw_headers = NULL;
 static int raw_headers_len = 0;
 static int raw_headers_i = 0;
 
-int voy_htable_compare_func(void *a, void *b)
+static int voy_htable_compare_func(void *a, void *b)
 {
     return strcmp((char*)a, (char*)b);
 }

@@ -2,7 +2,7 @@
 
 #define NUM_OF_BUCKETS 100
 
-size_t _voy_htable_fnv1a_hash(const char* cp)
+static size_t voy_htable_fnv1a_hash(const char* cp)
 {
     size_t hash = 0x811c9dc5;
     while (*cp) {
@@ -13,7 +13,7 @@ size_t _voy_htable_fnv1a_hash(const char* cp)
     return hash;
 }
 
-bool _voy_htable_bucket_index_is_valid(unsigned int bucket_index)
+static bool voy_htable_bucket_index_is_valid(unsigned int bucket_index)
 {
     if (bucket_index >= NUM_OF_BUCKETS) {
         return false;
@@ -21,12 +21,12 @@ bool _voy_htable_bucket_index_is_valid(unsigned int bucket_index)
     return true;
 }
 
-voy_array_t *_voy_htable_find_bucket(voy_htable_t *htable, void *key, size_t *bucket_hash, bool create_new)
+static voy_array_t *voy_htable_find_bucket(voy_htable_t *htable, void *key, size_t *bucket_hash, bool create_new)
 {
-    *bucket_hash = _voy_htable_fnv1a_hash(key);
+    *bucket_hash = voy_htable_fnv1a_hash(key);
     unsigned int bucket_index = *bucket_hash % NUM_OF_BUCKETS;
 
-    if (!_voy_htable_bucket_index_is_valid(bucket_index)) {
+    if (!voy_htable_bucket_index_is_valid(bucket_index)) {
         return NULL;
     }
 
@@ -88,7 +88,7 @@ void voy_htable_set(voy_htable_t *htable, void *key, void *value)
     }
 
     size_t bucket_hash = 0;
-    voy_array_t *bucket = _voy_htable_find_bucket(htable, key, &bucket_hash, true);
+    voy_array_t *bucket = voy_htable_find_bucket(htable, key, &bucket_hash, true);
 
     if (!bucket) {
         return;
@@ -113,7 +113,7 @@ void *voy_htable_get(voy_htable_t *htable, void *key)
     }
 
     size_t bucket_hash = 0;
-    voy_array_t *bucket = _voy_htable_find_bucket(htable, key, &bucket_hash, false);
+    voy_array_t *bucket = voy_htable_find_bucket(htable, key, &bucket_hash, false);
     if (!bucket) {
         return NULL;
     }
@@ -136,7 +136,7 @@ void *voy_htable_remove(voy_htable_t *htable, void *key, voy_htable_cb cb)
 
     void *value = NULL;
     size_t bucket_hash = 0;
-    voy_array_t *bucket = _voy_htable_find_bucket(htable, key, &bucket_hash, false);
+    voy_array_t *bucket = voy_htable_find_bucket(htable, key, &bucket_hash, false);
     if (!bucket) {
         return value;
     }

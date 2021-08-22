@@ -1,6 +1,6 @@
 #include "voy_dl_list.h"
 
-voy_dl_list_node_t *_voy_dl_list_create_node(void *value)
+static voy_dl_list_node_t *voy_dl_list_create_node(void *value)
 {
     voy_dl_list_node_t *node = malloc(sizeof(voy_dl_list_node_t));
 
@@ -15,7 +15,7 @@ voy_dl_list_node_t *_voy_dl_list_create_node(void *value)
     return node;
 }
 
-void _voy_dl_list_free_node(voy_dl_list_node_t *node, voy_dl_list_free_cb cb)
+static void voy_dl_list_free_node(voy_dl_list_node_t *node, voy_dl_list_free_cb cb)
 {
     if (!node) {
         return;
@@ -55,12 +55,12 @@ void voy_dl_list_clear(voy_dl_list_t *list, voy_dl_list_free_cb cb)
             current_node = current_node->next;
 
             if (current_node->prev) {
-                _voy_dl_list_free_node(current_node->prev, cb);
+                voy_dl_list_free_node(current_node->prev, cb);
             }
         }
 
         if (current_node) {
-            _voy_dl_list_free_node(current_node, cb);
+            voy_dl_list_free_node(current_node, cb);
         }
 
         list->first = NULL;
@@ -107,7 +107,7 @@ void voy_dl_list_push(voy_dl_list_t *list, void *value)
         return;
     }
 
-    voy_dl_list_node_t *node = _voy_dl_list_create_node(value);
+    voy_dl_list_node_t *node = voy_dl_list_create_node(value);
 
     // list is empty, this is the first element
     if (list->first == NULL) {
@@ -132,7 +132,7 @@ void voy_dl_list_shift(voy_dl_list_t *list, void *value)
         return;
     }
 
-    voy_dl_list_node_t *node = _voy_dl_list_create_node(value);
+    voy_dl_list_node_t *node = voy_dl_list_create_node(value);
 
     // list is empty, this is the first element
     if (list->first == NULL) {
@@ -160,7 +160,7 @@ void *voy_dl_list_unshift(voy_dl_list_t *list)
     // list has just 1 node
     if (list->first->next == NULL) {
         void *value = list->first->value;
-        _voy_dl_list_free_node(list->first, NULL);
+        voy_dl_list_free_node(list->first, NULL);
         list->first = NULL;
 
         return value;
@@ -169,7 +169,7 @@ void *voy_dl_list_unshift(voy_dl_list_t *list)
     voy_dl_list_node_t *new_first = list->first->next;
     void *value = list->first->value;
 
-    _voy_dl_list_free_node(list->first, NULL);
+    voy_dl_list_free_node(list->first, NULL);
     new_first->prev = NULL;
     list->first = new_first;
 
@@ -191,7 +191,7 @@ void *voy_dl_list_pop(voy_dl_list_t *list)
     // list has just 1 node
     if (list->first->next == NULL) {
         void *value = list->first->value;
-        _voy_dl_list_free_node(list->first, NULL);
+        voy_dl_list_free_node(list->first, NULL);
         list->first = NULL;
 
         return value;
@@ -205,7 +205,7 @@ void *voy_dl_list_pop(voy_dl_list_t *list)
 
     void *value = current_node->value;
     current_node->prev->next = NULL;
-    _voy_dl_list_free_node(current_node, NULL);
+    voy_dl_list_free_node(current_node, NULL);
 
     return value;
 }
@@ -227,7 +227,7 @@ void voy_dl_list_remove(voy_dl_list_t *list, void *value, voy_dl_list_cmp cmp, v
         void *node_value = list->first->value;
 
         if (cmp(node_value, value) == 0) {
-            _voy_dl_list_free_node(list->first, cb);
+            voy_dl_list_free_node(list->first, cb);
         }
 
         return;
@@ -240,7 +240,7 @@ void voy_dl_list_remove(voy_dl_list_t *list, void *value, voy_dl_list_cmp cmp, v
         voy_dl_list_node_t *next_node = current_node->next;
         next_node->prev = NULL;
         list->first = next_node;
-        _voy_dl_list_free_node(current_node, cb);
+        voy_dl_list_free_node(current_node, cb);
         return;
     }
 
@@ -251,7 +251,7 @@ void voy_dl_list_remove(voy_dl_list_t *list, void *value, voy_dl_list_cmp cmp, v
             // remove the node
             current_node->prev->next = current_node->next;
             current_node->next->prev = current_node->prev;
-            _voy_dl_list_free_node(current_node, cb);
+            voy_dl_list_free_node(current_node, cb);
             break;
         }
     }

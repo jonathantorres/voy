@@ -2,7 +2,7 @@
 
 #define EXPAND_RATE 100
 
-void *_voy_array_remove_element_at(voy_array_t *arr, unsigned int index)
+static void *voy_array_remove_element_at(voy_array_t *arr, unsigned int index)
 {
     if (arr->contents[index] != NULL) {
         void *element = arr->contents[index];
@@ -107,7 +107,7 @@ void *voy_array_pop(voy_array_t *arr)
 
     void *elem = NULL;
     if (arr->len > 0) {
-        elem = _voy_array_remove_element_at(arr, arr->len - 1);
+        elem = voy_array_remove_element_at(arr, arr->len - 1);
     }
 
     return elem;
@@ -158,7 +158,7 @@ void *voy_array_remove(voy_array_t *arr, unsigned int i)
         return NULL;
     }
 
-    void *element = _voy_array_remove_element_at(arr, i);
+    void *element = voy_array_remove_element_at(arr, i);
 
     if (element != NULL && arr->contents[i + 1] != NULL) {
         memmove(
@@ -204,7 +204,7 @@ void *voy_array_unshift(voy_array_t *arr)
 
     void *elem = NULL;
     if (arr->len > 0) {
-        elem = _voy_array_remove_element_at(arr, 0);
+        elem = voy_array_remove_element_at(arr, 0);
 
         memmove(
             arr->contents,

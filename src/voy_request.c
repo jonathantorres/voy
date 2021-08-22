@@ -1,6 +1,6 @@
 #include "voy_request.h"
 
-int voy_htable_compare_fn(void *a, void *b)
+static int voy_htable_compare_fn(void *a, void *b)
 {
     return strcmp((char*)a, (char*)b);
 }

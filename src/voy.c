@@ -23,10 +23,10 @@ typedef enum {
 } voy_args_status_t;
 
 void debug_conf(voy_conf_t *conf);
-void voy_print_usage();
-void voy_print_version();
-void handle_signals();
-voy_args_status_t voy_parse_args(int argc, char **argv);
+static void voy_print_usage();
+static void voy_print_version();
+static void handle_signals();
+static voy_args_status_t voy_parse_args(int argc, char **argv);
 
 static char *log_file_path = NULL;
 static char *conf_file_path = NULL;
@@ -98,7 +98,7 @@ int main(int argc, char **argv)
     return 0;
 }
 
-void sig_handler(int signum)
+static void sig_handler(int signum)
 {
     switch (signum) {
     case SIGTERM:
@@ -112,7 +112,7 @@ void sig_handler(int signum)
     }
 }
 
-void handle_signals()
+static void handle_signals()
 {
     struct sigaction act;
     act.sa_handler = sig_handler;
@@ -136,7 +136,7 @@ void handle_signals()
     }
 }
 
-voy_args_status_t voy_parse_args(int argc, char **argv)
+static voy_args_status_t voy_parse_args(int argc, char **argv)
 {
     if (argc <= 1) {
         return VOY_ARG_NONE;
@@ -225,13 +225,13 @@ void debug_conf(voy_conf_t *conf)
     exit(EXIT_SUCCESS);
 }
 
-void voy_print_version()
+static void voy_print_version()
 {
     fprintf(stderr, "voy version v%s\n", VOY_VERSION);
     exit(EXIT_SUCCESS);
 }
 
-void voy_print_usage()
+static void voy_print_usage()
 {
     fprintf(stderr, "voy [-v] [--version]\n");
     fprintf(stderr, "    [-c <file> | --config <file>]\n");
