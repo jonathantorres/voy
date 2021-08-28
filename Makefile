@@ -10,6 +10,8 @@ voy: voy.c voy_server.o voy_log.o voy_request.o voy_response.o voy_file.o voy_co
 # Tests
 voy_request_test: voy_request_test.c voy_request.o voy_htable.o voy_array.o
 	$(CFLAGS) tests/voy_request_test.c voy_request.o voy_htable.o voy_array.o -o bin/voy_request_test
+voy_conf_test: voy_conf_test.c voy_conf.o voy_array.o voy_str.o
+	$(CFLAGS) tests/voy_conf_test.c voy_conf.o voy_array.o voy_str.o -o bin/voy_conf_test
 voy_dl_list_test: voy_dl_list_test.c voy_dl_list.o
 	$(CFLAGS) tests/voy_dl_list_test.c voy_dl_list.o -o bin/voy_dl_list_test
 voy_array_test: voy_array_test.c voy_array.o
