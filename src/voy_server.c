@@ -192,6 +192,19 @@ static void voy_handle_conn(int conn_fd)
 
 bool voy_server_start(voy_conf_t *conf)
 {
+    // TODO: by using the configuration file
+    // get an array of ports to listen to
+
+    // TODO: launch a thread for each port to listen to
+    // in this thread create a listener for that port
+
+    // TODO: in each listener, when a request comes in,
+    // figure out which virtual server to pick 
+    // and serve the request accordingly
+    
+    // TODO: wait for those threads to finish
+    // probably never as long as the server
+    // is running ok with no issues
     if (conf) {} // TODO
     int server_fd, conn_fd;
     int port = VOY_DEFAULT_PORT;
