@@ -190,10 +190,65 @@ static void voy_handle_conn(int conn_fd)
     voy_response_free(res);
 }
 
+voy_array_t *get_listen_ports(voy_conf_t *conf)
+{
+    if (!conf) {
+        // TODO: log this error
+        return NULL;
+    }
+    voy_array_t *ports = voy_array_new(10, sizeof(int*));
+
+    if (!ports) {
+        return NULL;
+    }
+
+    // ports from the default server
+    if (conf->default_server && conf->default_server->ports) {
+        VOY_ARRAY_FOREACH(conf->default_server->ports) {
+            int *p = voy_array_get(conf->default_server->ports, i);
+            if (p) {
+                voy_array_push(ports, p);
+            }
+        }
+    }
+
+    // ports from virtual hosts
+    if (conf->vhosts) {
+        VOY_ARRAY_FOREACH(conf->vhosts) {
+            voy_server_conf_t *vhost = voy_array_get(conf->vhosts, i);
+            if (vhost && vhost->ports) {
+                VOY_ARRAY_FOREACH(vhost->ports) {
+                    int *p = voy_array_get(vhost->ports, i);
+                    bool p_found = false;
+                    
+                    // make sure that there are no duplicates
+                    for (unsigned int j = 0; j < ports->len; j++) {
+                        int *sp = voy_array_get(ports, j);
+                        if (*sp == *p) {
+                            p_found = true;
+                            break;
+                        }
+                    }
+                    if (p && !p_found) {
+                       voy_array_push(ports, p); 
+                    }
+                }
+            }
+        }
+    }
+
+    return ports;
+}
+
 bool voy_server_start(voy_conf_t *conf)
 {
-    // TODO: by using the configuration file
-    // get an array of ports to listen to
+    // get an array of ports to listen to from the conf file
+    voy_array_t *ports = get_listen_ports(conf);
+
+    if (!ports) {
+        // TODO: log this error
+        return false;
+    }
 
     // TODO: launch a thread for each port to listen to
     // in this thread create a listener for that port
