@@ -240,30 +240,9 @@ voy_array_t *get_listen_ports(voy_conf_t *conf)
     return ports;
 }
 
-bool voy_server_start(voy_conf_t *conf)
+bool serve_on_port(int port)
 {
-    // get an array of ports to listen to from the conf file
-    voy_array_t *ports = get_listen_ports(conf);
-
-    if (!ports) {
-        // TODO: log this error
-        return false;
-    }
-
-    // TODO: launch a thread for each port to listen to
-    // in this thread create a listener for that port
-
-    // TODO: in each listener, when a request comes in,
-    // figure out which virtual server to pick 
-    // and serve the request accordingly
-    
-    // TODO: wait for those threads to finish
-    // probably never as long as the server
-    // is running ok with no issues
-    if (conf) {} // TODO
     int server_fd, conn_fd;
-    int port = VOY_DEFAULT_PORT;
-
     if ((server_fd = voy_bind_and_listen(port)) < 0) {
         // TODO: log this
         return false;
@@ -284,6 +263,47 @@ bool voy_server_start(voy_conf_t *conf)
     }
     close(server_fd);
     return true;
+}
+
+bool voy_server_start(voy_conf_t *conf)
+{
+    // get an array of ports to listen to from the conf file
+    voy_array_t *ports = get_listen_ports(conf);
+
+    if (!ports) {
+        // TODO: log this error
+        return false;
+    }
+
+    // TODO: launch a thread for each port to listen to
+    // in this thread create a listener for that port
+
+    // TODO: in each listener, when a request comes in,
+    // figure out which virtual server to pick 
+    // and serve the request accordingly
+    
+    // TODO: wait for those threads to finish
+    // probably never as long as the server
+    // is running ok with no issues
+
+    // For now, listen to the first port found that does not require
+    // superuser priviledges, later on implement this
+    // using the threads and whatnot
+    int port = VOY_DEFAULT_PORT;
+    VOY_ARRAY_FOREACH(ports) {
+        int *p = voy_array_get(ports, i);
+        if (p && *p > 1024) {
+            port = *p;
+            break;
+        }
+    }
+
+    if (!serve_on_port(port)) {
+        // TODO: log this error
+        return false;
+    }
+
+   return true;
 }
 
 bool voy_server_shutdown()
