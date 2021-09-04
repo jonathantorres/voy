@@ -30,6 +30,7 @@ static int voy_bind_and_listen(int port)
 
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(port);
+    server_addr.sin_addr.s_addr = INADDR_ANY;
 
     // re-use the address when stopping and restarting the server
     int reuse_addr = 1;
