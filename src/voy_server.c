@@ -260,7 +260,21 @@ bool serve_on_port(int port)
         }
 
         // TODO: handle this request in it's own thread
-        voy_handle_conn(conn_fd);
+        // for now, we'll just fork
+        pid_t pid = fork();
+        if (pid > 0) {
+            // parent process
+            close(conn_fd);
+        } else if (pid == 0) {
+            // this is the child
+            voy_handle_conn(conn_fd);
+            exit(0);
+        } else {
+            // something went wrong
+            // the server won't be able to process the request
+            perror("server: fork()");
+            continue;
+        }
     }
     close(server_fd);
     return true;

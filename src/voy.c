@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <signal.h>
+#include <sys/wait.h>
 
 #include "voy_server.h"
 #include "voy_conf.h"
@@ -98,6 +99,16 @@ int main(int argc, char **argv)
     return 0;
 }
 
+void voy_wait_for_children()
+{
+    int status;
+    while (waitpid(-1, &status, WNOHANG) > 0) {
+        // do nothing for now
+        // maybe we should log this
+    }
+    return;
+}
+
 static void sig_handler(int signum)
 {
     switch (signum) {
@@ -108,6 +119,9 @@ static void sig_handler(int signum)
         break;
     case SIGHUP:
         voy_conf_reload();
+        break;
+    case SIGCHLD:
+        voy_wait_for_children();
         break;
     }
 }
@@ -132,6 +146,11 @@ static void handle_signals()
 
     // server restart signal
     if (sigaction(SIGHUP, &act, NULL) == -1) {
+        // TODO: log the error
+    }
+
+    // handling of terminated children
+    if (sigaction(SIGCHLD, &act, NULL) == -1) {
         // TODO: log the error
     }
 }
