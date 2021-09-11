@@ -267,6 +267,7 @@ bool serve_on_port(int port)
             close(conn_fd);
         } else if (pid == 0) {
             // this is the child
+            close(server_fd);
             voy_handle_conn(conn_fd);
             exit(0);
         } else {
