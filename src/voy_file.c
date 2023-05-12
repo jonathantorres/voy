@@ -12,40 +12,40 @@ typedef struct {
     int file_type;
 } voy_content_type_t;
 
-#define VOY_FILE_EXT_LEN 10
-#define VOY_FILE_TYPE_BINARY 0
-#define VOY_FILE_TYPE_TEXT 1
+#define VOY_FILE_EXT_LEN      10
+#define VOY_FILE_TYPE_BINARY  0
+#define VOY_FILE_TYPE_TEXT    1
 #define VOY_CONTENT_TYPES_LEN 28
 
 static voy_content_type_t content_types[VOY_CONTENT_TYPES_LEN] = {
-    { "html", "text/html", VOY_FILE_TYPE_TEXT },
-    { "htm", "text/html", VOY_FILE_TYPE_TEXT },
-    { "css", "text/css", VOY_FILE_TYPE_TEXT },
-    { "md", "text/markdown", VOY_FILE_TYPE_TEXT },
-    { "txt", "text/plain", VOY_FILE_TYPE_TEXT },
-    { "xml", "text/xml", VOY_FILE_TYPE_TEXT },
-    { "js", "application/javascript", VOY_FILE_TYPE_TEXT },
-    { "json", "application/json", VOY_FILE_TYPE_TEXT },
-    { "pdf", "application/pdf", VOY_FILE_TYPE_BINARY },
-    { "zip", "application/zip", VOY_FILE_TYPE_BINARY },
-    { "bmp", "image/bmp", VOY_FILE_TYPE_BINARY },
-    { "gif", "image/gif", VOY_FILE_TYPE_BINARY },
-    { "jpg", "image/jpeg", VOY_FILE_TYPE_BINARY },
-    { "jpeg", "image/jpeg", VOY_FILE_TYPE_BINARY },
-    { "ico", "image/x-icon", VOY_FILE_TYPE_BINARY },
-    { "png", "image/png", VOY_FILE_TYPE_BINARY },
-    { "tiff", "image/tiff", VOY_FILE_TYPE_BINARY },
-    { "svg", "image/svg", VOY_FILE_TYPE_TEXT },
-    { "mp4", "audio/mp4", VOY_FILE_TYPE_BINARY },
-    { "mp4", "video/mp4", VOY_FILE_TYPE_BINARY },
-    { "mpeg", "audio/mpeg", VOY_FILE_TYPE_BINARY },
-    { "mpeg", "video/mpeg", VOY_FILE_TYPE_BINARY },
-    { "ogg", "audio/ogg", VOY_FILE_TYPE_BINARY },
-    { "ogg", "video/ogg", VOY_FILE_TYPE_BINARY },
-    { "quicktime", "video/quicktime", VOY_FILE_TYPE_BINARY },
-    { "ttf", "font/ttf", VOY_FILE_TYPE_BINARY },
-    { "woff", "font/woff", VOY_FILE_TYPE_BINARY },
-    { "woff2", "font/woff2", VOY_FILE_TYPE_BINARY },
+    {"html", "text/html", VOY_FILE_TYPE_TEXT},
+    {"htm", "text/html", VOY_FILE_TYPE_TEXT},
+    {"css", "text/css", VOY_FILE_TYPE_TEXT},
+    {"md", "text/markdown", VOY_FILE_TYPE_TEXT},
+    {"txt", "text/plain", VOY_FILE_TYPE_TEXT},
+    {"xml", "text/xml", VOY_FILE_TYPE_TEXT},
+    {"js", "application/javascript", VOY_FILE_TYPE_TEXT},
+    {"json", "application/json", VOY_FILE_TYPE_TEXT},
+    {"pdf", "application/pdf", VOY_FILE_TYPE_BINARY},
+    {"zip", "application/zip", VOY_FILE_TYPE_BINARY},
+    {"bmp", "image/bmp", VOY_FILE_TYPE_BINARY},
+    {"gif", "image/gif", VOY_FILE_TYPE_BINARY},
+    {"jpg", "image/jpeg", VOY_FILE_TYPE_BINARY},
+    {"jpeg", "image/jpeg", VOY_FILE_TYPE_BINARY},
+    {"ico", "image/x-icon", VOY_FILE_TYPE_BINARY},
+    {"png", "image/png", VOY_FILE_TYPE_BINARY},
+    {"tiff", "image/tiff", VOY_FILE_TYPE_BINARY},
+    {"svg", "image/svg", VOY_FILE_TYPE_TEXT},
+    {"mp4", "audio/mp4", VOY_FILE_TYPE_BINARY},
+    {"mp4", "video/mp4", VOY_FILE_TYPE_BINARY},
+    {"mpeg", "audio/mpeg", VOY_FILE_TYPE_BINARY},
+    {"mpeg", "video/mpeg", VOY_FILE_TYPE_BINARY},
+    {"ogg", "audio/ogg", VOY_FILE_TYPE_BINARY},
+    {"ogg", "video/ogg", VOY_FILE_TYPE_BINARY},
+    {"quicktime", "video/quicktime", VOY_FILE_TYPE_BINARY},
+    {"ttf", "font/ttf", VOY_FILE_TYPE_BINARY},
+    {"woff", "font/woff", VOY_FILE_TYPE_BINARY},
+    {"woff2", "font/woff2", VOY_FILE_TYPE_BINARY},
 };
 
 static size_t voy_get_binary_file_contents_len(int fd)
@@ -84,7 +84,7 @@ static char *voy_set_binary_file_contents(int fd, size_t contents_len)
 
 static char *voy_set_text_file_contents(FILE *fp, size_t contents_len)
 {
-    char *contents = NULL;
+    char *contents   = NULL;
     char *contents_p = NULL;
 
     contents = malloc(contents_len + 1);
@@ -106,7 +106,7 @@ static char *voy_set_text_file_contents(FILE *fp, size_t contents_len)
 static char *voy_get_content_len_str(size_t contents_len)
 {
     int content_len_str_len = 12;
-    char *content_len_str = malloc(content_len_str_len);
+    char *content_len_str   = malloc(content_len_str_len);
     if (!content_len_str) {
         return NULL;
     }
@@ -117,16 +117,16 @@ static char *voy_get_content_len_str(size_t contents_len)
 
 static char *voy_get_file_path(voy_request_t *req)
 {
-    char *uri = NULL;
-    char *uri_p = NULL;
+    char *uri       = NULL;
+    char *uri_p     = NULL;
     char *req_uri_p = NULL;
-    int uri_len = strlen(req->uri);
-    uri = malloc(uri_len);
+    int uri_len     = strlen(req->uri);
+    uri             = malloc(uri_len);
     if (!uri) {
         return NULL;
     }
     memset(uri, 0, uri_len);
-    uri_p = uri;
+    uri_p     = uri;
     req_uri_p = req->uri;
 
     bool slash_found = false;
@@ -146,7 +146,7 @@ static char *voy_get_file_path(voy_request_t *req)
     }
 
     int file_to_serve_len = strlen(uri);
-    char *file_to_serve = malloc(file_to_serve_len);
+    char *file_to_serve   = malloc(file_to_serve_len);
     if (!file_to_serve) {
         free(uri);
         return NULL;
@@ -162,7 +162,7 @@ static char *voy_get_file_ext(char *uri)
 {
     size_t uri_len = strlen(uri);
     size_t dot_loc = 0;
-    char *uri_p = uri;
+    char *uri_p    = uri;
     char *file_ext = malloc(VOY_FILE_EXT_LEN);
 
     if (!file_ext) {
@@ -199,11 +199,12 @@ static voy_content_type_t *voy_get_content_type_struct(char *file_ext)
     return found_content_type;
 }
 
-static void voy_serve_file(voy_request_t *req, voy_response_t *res, char *contents, size_t contents_len)
+static void voy_serve_file(voy_request_t *req, voy_response_t *res, char *contents,
+                           size_t contents_len)
 {
-    char *file_ext = voy_get_file_ext(req->uri);
+    char *file_ext                       = voy_get_file_ext(req->uri);
     voy_content_type_t *cur_content_type = voy_get_content_type_struct(file_ext);
-    char *content_len_str = voy_get_content_len_str(contents_len);
+    char *content_len_str                = voy_get_content_len_str(contents_len);
 
     voy_response_set_status_code(res, 200);
     voy_response_set_header(res, "Content-Length", voy_str_dup(content_len_str));
@@ -222,9 +223,9 @@ bool voy_file_serve(voy_request_t *req, voy_response_t *res)
         return false;
     }
 
-    char *file_ext = voy_get_file_ext(req->uri);
+    char *file_ext                       = voy_get_file_ext(req->uri);
     voy_content_type_t *cur_content_type = voy_get_content_type_struct(file_ext);
-    char *contents = NULL;
+    char *contents                       = NULL;
     size_t contents_len;
 
     if (cur_content_type != NULL && cur_content_type->file_type == VOY_FILE_TYPE_BINARY) {

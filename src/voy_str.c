@@ -2,12 +2,12 @@
 
 static char *create_string(char *chars)
 {
-    int len = strlen(chars);
-    char *string = malloc(len+1);
+    int len      = strlen(chars);
+    char *string = malloc(len + 1);
     if (!string) {
         return NULL;
     }
-    memset(string, 0, len+1);
+    memset(string, 0, len + 1);
     char *str_p = string;
     for (char *c = chars; *c != '\0'; c++) {
         *str_p = *c;
@@ -23,16 +23,16 @@ static char *concat_chars(char *cur_str, char *chars)
         return cur_str;
     }
 
-    char *new_str = realloc(cur_str, chars_len+1);
+    char *new_str = realloc(cur_str, chars_len + 1);
     if (!new_str) {
         return cur_str;
     }
     char *new_str_p = new_str;
-    char *chars_p = chars;
+    char *chars_p   = chars;
     for (; *new_str_p != '\0'; new_str_p++) {
         // moving the pointer to the end of the current string
     }
-    memset(new_str_p, 0, chars_len+1);
+    memset(new_str_p, 0, chars_len + 1);
     for (; *chars_p != '\0'; chars_p++) {
         *new_str_p = *chars_p;
         new_str_p++;
@@ -49,8 +49,8 @@ voy_str_t *voy_str_new(char *chars)
         return NULL;
     }
 
-    str->len = 0;
-    str->string = NULL;
+    str->len     = 0;
+    str->string  = NULL;
     str->start_p = NULL;
     if (!chars) {
         char *empty_str = create_string("");
@@ -58,13 +58,13 @@ voy_str_t *voy_str_new(char *chars)
             free(str);
             return NULL;
         }
-        str->string = empty_str;
+        str->string  = empty_str;
         str->start_p = empty_str;
         return str;
     }
 
-    str->len = strlen(chars);
-    str->string = create_string(chars);
+    str->len     = strlen(chars);
+    str->string  = create_string(chars);
     str->start_p = str->string;
     return str;
 }
@@ -78,7 +78,7 @@ void voy_str_free(voy_str_t *str)
         free(str->start_p);
     }
     str->start_p = NULL;
-    str->string = NULL;
+    str->string  = NULL;
     free(str);
 }
 
@@ -108,7 +108,7 @@ voy_str_t *voy_str_concat_voy_str(voy_str_t *str, voy_str_t *chars)
     }
     unsigned long chars_len = strlen(chars->string);
 
-    str->string = concat_chars(str->string, chars->string);
+    str->string  = concat_chars(str->string, chars->string);
     str->start_p = str->string;
     str->len += chars_len;
 
@@ -122,7 +122,7 @@ voy_str_t *voy_str_concat(voy_str_t *str, char *chars)
     }
     unsigned long chars_len = strlen(chars);
 
-    str->string = concat_chars(str->string, chars);
+    str->string  = concat_chars(str->string, chars);
     str->start_p = str->string;
     str->len += chars_len;
 
@@ -162,7 +162,7 @@ void voy_str_trim(voy_str_t *str)
     }
 
     int spaces_left = 0;
-    char *str_p = str->string;
+    char *str_p     = str->string;
 
     // count the amount of whitespace on the left
     for (int i = 0; i < str->len; i++) {
@@ -174,15 +174,15 @@ void voy_str_trim(voy_str_t *str)
         break;
     }
     if (spaces_left > 0) {
-        str->len = str->len - spaces_left;
+        str->len    = str->len - spaces_left;
         str->string = str_p;
     }
 
     int spaces_right = 0;
-    bool ws_found = false;
-    str_p = &str->string[str->len-1];
+    bool ws_found    = false;
+    str_p            = &str->string[str->len - 1];
     // move string pointer the left as long as there is whitespace
-    for (int i = str->len-1; i > 0; i--) {
+    for (int i = str->len - 1; i > 0; i--) {
         if (isspace(str->string[i])) {
             spaces_right++;
             ws_found = true;
@@ -220,7 +220,7 @@ voy_array_t *voy_str_split_by_char(voy_str_t *str, char delim)
     // No delimiters, just return the array with 1 element with the string in it
     voy_array_t *splits = NULL;
     if (delim_count == 0) {
-        splits = voy_array_new(1, sizeof(voy_str_t*));
+        splits = voy_array_new(1, sizeof(voy_str_t *));
         if (!splits) {
             return NULL;
         }
@@ -230,7 +230,7 @@ voy_array_t *voy_str_split_by_char(voy_str_t *str, char delim)
         return splits;
     }
 
-    splits = voy_array_new(delim_count, sizeof(voy_str_t*));
+    splits = voy_array_new(delim_count, sizeof(voy_str_t *));
     if (!splits) {
         return NULL;
     }
@@ -251,7 +251,7 @@ voy_array_t *voy_str_split_by_char(voy_str_t *str, char delim)
                 buf_p++;
             }
 
-            *buf_p = '\0';
+            *buf_p          = '\0';
             voy_str_t *part = voy_str_new(buf);
             voy_array_push(splits, part);
             buf_p = buf;

@@ -2,11 +2,11 @@
 
 #define NUM_OF_BUCKETS 100
 
-static size_t voy_htable_fnv1a_hash(const char* cp)
+static size_t voy_htable_fnv1a_hash(const char *cp)
 {
     size_t hash = 0x811c9dc5;
     while (*cp) {
-        hash ^= (unsigned char) *cp++;
+        hash ^= (unsigned char)*cp++;
         hash *= 0x01000193;
     }
 
@@ -21,9 +21,10 @@ static bool voy_htable_bucket_index_is_valid(unsigned int bucket_index)
     return true;
 }
 
-static voy_array_t *voy_htable_find_bucket(voy_htable_t *htable, void *key, size_t *bucket_hash, bool create_new)
+static voy_array_t *voy_htable_find_bucket(voy_htable_t *htable, void *key, size_t *bucket_hash,
+                                           bool create_new)
 {
-    *bucket_hash = voy_htable_fnv1a_hash(key);
+    *bucket_hash              = voy_htable_fnv1a_hash(key);
     unsigned int bucket_index = *bucket_hash % NUM_OF_BUCKETS;
 
     if (!voy_htable_bucket_index_is_valid(bucket_index)) {
@@ -32,7 +33,7 @@ static voy_array_t *voy_htable_find_bucket(voy_htable_t *htable, void *key, size
 
     voy_array_t *bucket = voy_array_get(htable->buckets, bucket_index);
     if (!bucket && create_new) {
-        bucket = voy_array_new(NUM_OF_BUCKETS, sizeof(voy_htable_node_t*));
+        bucket = voy_array_new(NUM_OF_BUCKETS, sizeof(voy_htable_node_t *));
         voy_array_set(htable->buckets, bucket, bucket_index);
     }
 
@@ -47,8 +48,8 @@ voy_htable_t *voy_htable_new(voy_htable_cmp cmp)
         return NULL;
     }
 
-    htable->cmp = cmp;
-    htable->buckets = voy_array_new(NUM_OF_BUCKETS, sizeof(voy_array_t*));
+    htable->cmp          = cmp;
+    htable->buckets      = voy_array_new(NUM_OF_BUCKETS, sizeof(voy_array_t *));
     htable->buckets->len = htable->buckets->capacity;
 
     return htable;
@@ -87,7 +88,7 @@ void voy_htable_set(voy_htable_t *htable, void *key, void *value)
         return;
     }
 
-    size_t bucket_hash = 0;
+    size_t bucket_hash  = 0;
     voy_array_t *bucket = voy_htable_find_bucket(htable, key, &bucket_hash, true);
 
     if (!bucket) {
@@ -100,9 +101,9 @@ void voy_htable_set(voy_htable_t *htable, void *key, void *value)
         return;
     }
 
-    node->key = key;
+    node->key   = key;
     node->value = value;
-    node->hash = bucket_hash;
+    node->hash  = bucket_hash;
     voy_array_push(bucket, node);
 }
 
@@ -112,7 +113,7 @@ void *voy_htable_get(voy_htable_t *htable, void *key)
         return NULL;
     }
 
-    size_t bucket_hash = 0;
+    size_t bucket_hash  = 0;
     voy_array_t *bucket = voy_htable_find_bucket(htable, key, &bucket_hash, false);
     if (!bucket) {
         return NULL;
@@ -134,8 +135,8 @@ void *voy_htable_remove(voy_htable_t *htable, void *key, voy_htable_cb cb)
         return NULL;
     }
 
-    void *value = NULL;
-    size_t bucket_hash = 0;
+    void *value         = NULL;
+    size_t bucket_hash  = 0;
     voy_array_t *bucket = voy_htable_find_bucket(htable, key, &bucket_hash, false);
     if (!bucket) {
         return value;
@@ -144,7 +145,7 @@ void *voy_htable_remove(voy_htable_t *htable, void *key, voy_htable_cb cb)
     for (unsigned int i = 0; i < bucket->len; i++) {
         voy_htable_node_t *node = voy_array_get(bucket, i);
         if (node && node->hash == bucket_hash && htable->cmp(node->key, key) == 0) {
-            value = node->value;
+            value      = node->value;
             void *last = voy_array_pop(bucket);
             if (last != node) {
                 voy_array_set(bucket, last, i);

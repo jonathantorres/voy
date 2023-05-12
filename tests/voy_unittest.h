@@ -1,9 +1,9 @@
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 typedef char *(*voy_test_func)();
 
-int num_of_tests = 0;
+int num_of_tests      = 0;
 int num_of_assertions = 0;
 
 inline static void voy_run_test(voy_test_func func)

@@ -8,8 +8,8 @@ static voy_dl_list_node_t *voy_dl_list_create_node(void *value)
         return NULL;
     }
 
-    node->prev = NULL;
-    node->next = NULL;
+    node->prev  = NULL;
+    node->next  = NULL;
     node->value = value;
 
     return node;
@@ -24,8 +24,8 @@ static void voy_dl_list_free_node(voy_dl_list_node_t *node, voy_dl_list_free_cb 
         cb(node->value);
     }
 
-    node->prev = NULL;
-    node->next = NULL;
+    node->prev  = NULL;
+    node->next  = NULL;
     node->value = NULL;
 
     free(node);
@@ -121,7 +121,7 @@ void voy_dl_list_push(voy_dl_list_t *list, void *value)
         current_node = current_node->next;
     }
 
-    node->prev = current_node;
+    node->prev         = current_node;
     current_node->next = node;
 }
 
@@ -141,8 +141,8 @@ void voy_dl_list_shift(voy_dl_list_t *list, void *value)
     }
 
     list->first->prev = node;
-    node->next = list->first;
-    list->first = node;
+    node->next        = list->first;
+    list->first       = node;
 }
 
 // remove the first node and return it
@@ -167,11 +167,11 @@ void *voy_dl_list_unshift(voy_dl_list_t *list)
     }
 
     voy_dl_list_node_t *new_first = list->first->next;
-    void *value = list->first->value;
+    void *value                   = list->first->value;
 
     voy_dl_list_free_node(list->first, NULL);
     new_first->prev = NULL;
-    list->first = new_first;
+    list->first     = new_first;
 
     return value;
 }
@@ -203,7 +203,7 @@ void *voy_dl_list_pop(voy_dl_list_t *list)
         current_node = current_node->next;
     }
 
-    void *value = current_node->value;
+    void *value              = current_node->value;
     current_node->prev->next = NULL;
     voy_dl_list_free_node(current_node, NULL);
 
@@ -211,7 +211,8 @@ void *voy_dl_list_pop(voy_dl_list_t *list)
 }
 
 // remove node whose value is {value}
-void voy_dl_list_remove(voy_dl_list_t *list, void *value, voy_dl_list_cmp cmp, voy_dl_list_free_cb cb)
+void voy_dl_list_remove(voy_dl_list_t *list, void *value, voy_dl_list_cmp cmp,
+                        voy_dl_list_free_cb cb)
 {
     if (!list) {
         return;
@@ -238,8 +239,8 @@ void voy_dl_list_remove(voy_dl_list_t *list, void *value, voy_dl_list_cmp cmp, v
     // check the first one
     if (cmp(current_node->value, value) == 0) {
         voy_dl_list_node_t *next_node = current_node->next;
-        next_node->prev = NULL;
-        list->first = next_node;
+        next_node->prev               = NULL;
+        list->first                   = next_node;
         voy_dl_list_free_node(current_node, cb);
         return;
     }

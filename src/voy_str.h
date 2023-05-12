@@ -1,11 +1,11 @@
 #ifndef _voy_str_h
 #define _voy_str_h
 
+#include "voy_array.h"
+#include <ctype.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
-#include "voy_array.h"
 
 typedef struct voy_str {
     char *string;

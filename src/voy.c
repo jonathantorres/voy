@@ -1,18 +1,18 @@
+#include <signal.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
-#include <signal.h>
 #include <sys/wait.h>
 
-#include "voy_server.h"
 #include "voy_conf.h"
 #include "voy_log.h"
+#include "voy_server.h"
 
-#define VOY_VERSION "0.1.0"
-#define DEFAULT_PREFIX "/usr/local/voy"
+#define VOY_VERSION       "0.1.0"
+#define DEFAULT_PREFIX    "/usr/local/voy"
 #define DEFAULT_CONF_FILE DEFAULT_PREFIX "/conf/voy.conf"
-#define DEFAULT_LOG_FILE DEFAULT_PREFIX "/log/voy.log"
+#define DEFAULT_LOG_FILE  DEFAULT_PREFIX "/log/voy.log"
 
 typedef enum {
     VOY_ARG_NONE,
@@ -29,8 +29,8 @@ static void voy_print_version();
 static void handle_signals();
 static voy_args_status_t voy_parse_args(int argc, char **argv);
 
-static char *log_file_path = NULL;
-static char *conf_file_path = NULL;
+static char *log_file_path        = NULL;
+static char *conf_file_path       = NULL;
 static char *args_err_unknown_arg = NULL;
 
 int main(int argc, char **argv)
@@ -112,17 +112,17 @@ void voy_wait_for_children()
 static void sig_handler(int signum)
 {
     switch (signum) {
-    case SIGTERM:
-    case SIGINT:
-    case SIGQUIT:
-        voy_server_shutdown();
-        break;
-    case SIGHUP:
-        voy_conf_reload();
-        break;
-    case SIGCHLD:
-        voy_wait_for_children();
-        break;
+        case SIGTERM:
+        case SIGINT:
+        case SIGQUIT:
+            voy_server_shutdown();
+            break;
+        case SIGHUP:
+            voy_conf_reload();
+            break;
+        case SIGCHLD:
+            voy_wait_for_children();
+            break;
     }
 }
 
@@ -190,19 +190,19 @@ void debug_conf(voy_conf_t *conf)
 {
     if (conf && conf->default_server) {
         if (conf->default_server->ports) {
-            VOY_ARRAY_FOREACH(conf->default_server->ports) {
+            VOY_ARRAY_FOREACH (conf->default_server->ports) {
                 int *n = voy_array_get(conf->default_server->ports, i);
                 printf("found port: %d\n", *n);
             }
         }
         if (conf->default_server->index_pages) {
-            VOY_ARRAY_FOREACH(conf->default_server->index_pages) {
+            VOY_ARRAY_FOREACH (conf->default_server->index_pages) {
                 voy_str_t *i_page = voy_array_get(conf->default_server->index_pages, i);
                 printf("found index page: %s\n", i_page->string);
             }
         }
         if (conf->default_server->error_pages) {
-            VOY_ARRAY_FOREACH(conf->default_server->error_pages) {
+            VOY_ARRAY_FOREACH (conf->default_server->error_pages) {
                 voy_error_page_t *err_page = voy_array_get(conf->default_server->error_pages, i);
                 printf("found error page (code): %d\n", *(err_page->code));
                 printf("found error page (path): %s\n", err_page->page->string);
@@ -211,7 +211,7 @@ void debug_conf(voy_conf_t *conf)
     }
 
     if (conf && conf->vhosts) {
-        VOY_ARRAY_FOREACH(conf->vhosts) {
+        VOY_ARRAY_FOREACH (conf->vhosts) {
             voy_server_conf_t *cur_vhost = voy_array_get(conf->vhosts, i);
 
             if (cur_vhost) {
@@ -232,7 +232,7 @@ void debug_conf(voy_conf_t *conf)
                     }
                 }
                 if (cur_vhost->error_pages) {
-                    VOY_ARRAY_FOREACH(cur_vhost->error_pages) {
+                    VOY_ARRAY_FOREACH (cur_vhost->error_pages) {
                         voy_error_page_t *err_page = voy_array_get(cur_vhost->error_pages, i);
                         printf("vhost error page (code): %d\n", *(err_page->code));
                         printf("vhost error page (path): %s\n", err_page->page->string);
@@ -256,7 +256,8 @@ static void voy_print_usage()
     fprintf(stderr, "    [-c <file> | --config <file>]\n");
     fprintf(stderr, "    [-l <path> | --log <path>]\n");
     fprintf(stderr, "\n-v --version\tPrint version and exit");
-    fprintf(stderr, "\n-c <file>\tUse the specified configuration file (default is %s)", DEFAULT_CONF_FILE);
+    fprintf(stderr, "\n-c <file>\tUse the specified configuration file (default is %s)",
+            DEFAULT_CONF_FILE);
     fprintf(stderr, "\n-l <path>\tStore logs in this location (default is %s)", DEFAULT_LOG_FILE);
     fprintf(stderr, "\n");
     exit(EXIT_SUCCESS);

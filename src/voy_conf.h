@@ -1,11 +1,11 @@
 #ifndef _voy_conf_h
 #define _voy_conf_h
 
-#include <stdio.h>
-#include <stdbool.h>
-#include <stdlib.h>
 #include "voy_array.h"
 #include "voy_str.h"
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 // This is supposed to validate, test and parse the configuration file
 
@@ -27,25 +27,25 @@
 #define VOY_VHOST_OPTION      "vhost"
 
 typedef struct {
-    voy_str_t   *root;
-    voy_array_t *names; // array of strings
-    voy_array_t *ports; // array of int's
+    voy_str_t *root;
+    voy_array_t *names;       // array of strings
+    voy_array_t *ports;       // array of int's
     voy_array_t *index_pages; // array of strings
     voy_array_t *error_pages; // array of voy_error_page_t's
-    voy_str_t   *error_log;
-    voy_str_t   *access_log;
+    voy_str_t *error_log;
+    voy_str_t *access_log;
 } voy_server_conf_t;
 
 typedef struct {
-    int       *code;
+    int *code;
     voy_str_t *page;
 } voy_error_page_t;
 
 typedef struct {
-    voy_str_t         *user;
-    voy_str_t         *group;
+    voy_str_t *user;
+    voy_str_t *group;
     voy_server_conf_t *default_server;
-    voy_array_t       *vhosts; // an array of voy_server_conf_t's
+    voy_array_t *vhosts; // an array of voy_server_conf_t's
 } voy_conf_t;
 
 voy_conf_t *voy_conf_load(char *conf_file_path);

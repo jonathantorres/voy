@@ -2,7 +2,7 @@
 
 static int voy_htable_compare_fn(void *a, void *b)
 {
-    return strcmp((char*)a, (char*)b);
+    return strcmp((char *)a, (char *)b);
 }
 
 bool voy_request_parse_start_line(voy_request_t *req, char *buffer)
@@ -10,9 +10,9 @@ bool voy_request_parse_start_line(voy_request_t *req, char *buffer)
     char *buf;
     char *req_method, *req_method_p;
     char *req_uri, *req_uri_p;
-    int num_of_spaces = 0;
+    int num_of_spaces  = 0;
     int req_method_len = 24; // arbitrary
-    int req_uri_len = 0;
+    int req_uri_len    = 0;
 
     req_method = malloc(req_method_len);
     memset(req_method, 0, req_method_len);
@@ -51,8 +51,8 @@ bool voy_request_parse_start_line(voy_request_t *req, char *buffer)
     }
     *req_uri_p = '\0';
 
-    req->method = req_method;
-    req->uri = req_uri;
+    req->method       = req_method;
+    req->uri          = req_uri;
     req->line_is_read = true;
 
     if (strcmp(req->method, "GET") == 0 || strcmp(req->method, "HEAD") == 0) {
@@ -68,11 +68,11 @@ bool voy_request_parse_headers(voy_request_t *req, char *buffer)
     }
 
     char *buf;
-    int i = 0;
-    int num_of_newlines = 0;
+    int i                     = 0;
+    int num_of_newlines       = 0;
     voy_array_t *header_lines = voy_array_new(20, sizeof(char *));
-    int line_length = 256; // arbitrary
-    char *cur_line = malloc(line_length);
+    int line_length           = 256; // arbitrary
+    char *cur_line            = malloc(line_length);
 
     if (!cur_line) {
         return false;
@@ -114,10 +114,10 @@ bool voy_request_parse_headers(voy_request_t *req, char *buffer)
     }
 
     for (unsigned int j = 0; j < header_lines->len; j++) {
-        char *header_line = (char*)voy_array_get(header_lines, j);
-        int key_len = 0;
-        int value_len = 0;
-        bool count_keys = true;
+        char *header_line = (char *)voy_array_get(header_lines, j);
+        int key_len       = 0;
+        int value_len     = 0;
+        bool count_keys   = true;
 
         // get the lengths of the key and the value
         for (size_t k = 0; k < strlen(header_line); k++) {
@@ -144,8 +144,8 @@ bool voy_request_parse_headers(voy_request_t *req, char *buffer)
         memset(val, 0, value_len + 1);
 
         bool found_colon = false;
-        char *key_p = key;
-        char *val_p = val;
+        char *key_p      = key;
+        char *val_p      = val;
 
         for (size_t l = 0; l < strlen(header_line); l++) {
             if (!found_colon && header_line[l] == ':') {
@@ -168,7 +168,7 @@ bool voy_request_parse_headers(voy_request_t *req, char *buffer)
         free(key);
     }
 
-    VOY_ARRAY_FOREACH(header_lines) {
+    VOY_ARRAY_FOREACH (header_lines) {
         char *cur_l = voy_array_get(header_lines, i);
         if (cur_l) {
             free(cur_l);
@@ -180,21 +180,22 @@ bool voy_request_parse_headers(voy_request_t *req, char *buffer)
 
     if (strcmp(req->method, "GET") == 0 || strcmp(req->method, "HEAD") == 0) {
         req->headers_are_read = true;
-        req->body_is_read = true;
-        req->done_reading = true;
+        req->body_is_read     = true;
+        req->done_reading     = true;
     }
     return true;
 }
 
 bool voy_request_parse_body(voy_request_t *req, char *buffer)
 {
-    if (req && (!req->line_is_read || !req->headers_are_read || req->body_is_read || req->done_reading)) {
+    if (req &&
+        (!req->line_is_read || !req->headers_are_read || req->body_is_read || req->done_reading)) {
         return true;
     }
 
     size_t i;
     size_t body_start_i = 0;
-    char *body = NULL;
+    char *body          = NULL;
 
     for (i = 0; i < strlen(buffer); i++) {
         if (buffer[i] == '\n' && buffer[i + 1] == '\r') {
@@ -209,14 +210,14 @@ bool voy_request_parse_body(voy_request_t *req, char *buffer)
 
         if (content_len_str != NULL) {
             int content_len = atoi(content_len_str) + 1;
-            body = malloc(content_len);
+            body            = malloc(content_len);
             if (body != NULL) {
                 memset(body, 0, content_len);
                 memcpy(body, &buffer[body_start_i], content_len - 1);
                 body[content_len - 1] = '\0';
-                req->body = body;
-                req->body_is_read = true;
-                req->done_reading = true;
+                req->body             = body;
+                req->body_is_read     = true;
+                req->done_reading     = true;
             }
         }
     }
@@ -231,15 +232,15 @@ voy_request_t *voy_request_new()
         return NULL;
     }
 
-    req->method = NULL;
-    req->uri = NULL;
-    req->body = NULL;
-    req->headers = NULL;
-    req->uri_params = NULL;
-    req->done_reading = false;
-    req->line_is_read = false;
-    req->headers_are_read = false;
-    req->body_is_read = false;
+    req->method                = NULL;
+    req->uri                   = NULL;
+    req->body                  = NULL;
+    req->headers               = NULL;
+    req->uri_params            = NULL;
+    req->done_reading          = false;
+    req->line_is_read          = false;
+    req->headers_are_read      = false;
+    req->body_is_read          = false;
     req->total_body_bytes_read = 0;
 
     voy_htable_t *headers_p = voy_htable_new(voy_htable_compare_fn);
@@ -254,7 +255,7 @@ voy_request_t *voy_request_new()
         return NULL;
     }
 
-    req->headers = headers_p;
+    req->headers    = headers_p;
     req->uri_params = uri_params_p;
 
     return req;
@@ -267,16 +268,18 @@ void voy_request_free(voy_request_t *req)
     }
 
     if (req->headers) {
-        VOY_HTABLE_FOREACH(req->headers) {
+        VOY_HTABLE_FOREACH (req->headers) {
             free(elem->value);
-        } VOY_HTABLE_FOREACH_END
+        }
+        VOY_HTABLE_FOREACH_END
         voy_htable_free(req->headers, NULL);
     }
 
     if (req->uri_params) {
-        VOY_HTABLE_FOREACH(req->uri_params) {
+        VOY_HTABLE_FOREACH (req->uri_params) {
             free(elem->value);
-        } VOY_HTABLE_FOREACH_END
+        }
+        VOY_HTABLE_FOREACH_END
         voy_htable_free(req->uri_params, NULL);
     }
 

@@ -1,5 +1,5 @@
-#include "voy_unittest.h"
 #include "voy_array.h"
+#include "voy_unittest.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -13,18 +13,18 @@ void voy_array_print(voy_array_t *arr, char type)
     }
 
     printf("[");
-    VOY_ARRAY_FOREACH(arr) {
+    VOY_ARRAY_FOREACH (arr) {
         void *val = NULL;
         switch (type) {
             case 'i':
-                val = (int*)voy_array_get(arr, i);
-                printf("%d,", *(int*)val);
-            break;
+                val = (int *)voy_array_get(arr, i);
+                printf("%d,", *(int *)val);
+                break;
 
             case 's':
                 val = voy_array_get(arr, i);
-                printf("%s,", (char*)val);
-            break;
+                printf("%s,", (char *)val);
+                break;
         }
     }
     printf("]\n");
@@ -39,12 +39,13 @@ void voy_array_free_cb_func(void *value)
 
 char *test_create()
 {
-    voy_array_t *arr = voy_array_new(10, sizeof(int*));
+    voy_array_t *arr = voy_array_new(10, sizeof(int *));
 
     voy_assert(arr->len == 0, "Array len should be 0");
     voy_assert(arr->capacity == 10, "Array capacity should be 10");
     voy_assert(arr->expand_rate == 100, "Array expand_rate should be 100");
-    voy_assert(arr->item_size == sizeof(int*), "Array item_size is not correct, it should be sizeof(int*)");
+    voy_assert(arr->item_size == sizeof(int *),
+               "Array item_size is not correct, it should be sizeof(int*)");
     voy_assert(arr->contents != NULL, "Array contents should not be NULL");
 
     voy_array_free(arr, NULL);
@@ -54,7 +55,7 @@ char *test_create()
 
 char *test_free()
 {
-    voy_array_t *arr = voy_array_new(100, sizeof(int*));
+    voy_array_t *arr = voy_array_new(100, sizeof(int *));
 
     for (unsigned int i = 0; i < 100; i++) {
         int *value = malloc(sizeof(int));
@@ -74,7 +75,7 @@ char *test_free()
 
 char *test_clear()
 {
-    voy_array_t *arr = voy_array_new(100, sizeof(int*));
+    voy_array_t *arr = voy_array_new(100, sizeof(int *));
 
     for (unsigned int i = 0; i < 100; i++) {
         int *value = malloc(sizeof(int));
@@ -97,7 +98,7 @@ char *test_clear()
 
 char *test_push()
 {
-    voy_array_t *arr = voy_array_new(10, sizeof(int*));
+    voy_array_t *arr = voy_array_new(10, sizeof(int *));
 
     for (unsigned int i = 0; i < 100; i++) {
         int *value = malloc(sizeof(int));
@@ -117,7 +118,7 @@ char *test_push()
 
 char *test_pop()
 {
-    voy_array_t *arr = voy_array_new(10, sizeof(int*));
+    voy_array_t *arr = voy_array_new(10, sizeof(int *));
 
     for (unsigned int i = 0; i < 5; i++) {
         int *value = malloc(sizeof(int));
@@ -140,7 +141,7 @@ char *test_pop()
 
 char *test_set()
 {
-    voy_array_t *arr = voy_array_new(10, sizeof(int*));
+    voy_array_t *arr = voy_array_new(10, sizeof(int *));
 
     for (unsigned int i = 0; i < 5; i++) {
         int *value = malloc(sizeof(int));
@@ -160,7 +161,7 @@ char *test_set()
 
 char *test_get()
 {
-    voy_array_t *arr = voy_array_new(10, sizeof(int*));
+    voy_array_t *arr = voy_array_new(10, sizeof(int *));
 
     for (unsigned int i = 0; i < 5; i++) {
         int *value = malloc(sizeof(int));
@@ -170,7 +171,7 @@ char *test_get()
         }
     }
 
-    int *number = voy_array_get(arr, 4);
+    int *number      = voy_array_get(arr, 4);
     void *off_number = voy_array_get(arr, 100);
     voy_assert(*number == 20, "Element's value should be 20");
     voy_assert(off_number == NULL, "The off number should be NULL");
@@ -181,7 +182,7 @@ char *test_get()
 
 char *test_remove()
 {
-    voy_array_t *arr = voy_array_new(10, sizeof(int*));
+    voy_array_t *arr = voy_array_new(10, sizeof(int *));
 
     for (unsigned int i = 0; i < 5; i++) {
         int *value = malloc(sizeof(int));
@@ -203,7 +204,7 @@ char *test_remove()
 
 char *test_shift()
 {
-    voy_array_t *arr = voy_array_new(10, sizeof(int*));
+    voy_array_t *arr = voy_array_new(10, sizeof(int *));
 
     for (unsigned int i = 0; i < 5; i++) {
         int *value = malloc(sizeof(int));
@@ -229,7 +230,7 @@ char *test_shift()
 
 char *test_unshift()
 {
-    voy_array_t *arr = voy_array_new(10, sizeof(int*));
+    voy_array_t *arr = voy_array_new(10, sizeof(int *));
 
     for (unsigned int i = 0; i < 5; i++) {
         int *value = malloc(sizeof(int));
@@ -251,13 +252,9 @@ char *test_unshift()
 
 char *test_array_of_strings()
 {
-    voy_array_t *arr = voy_array_new(10, sizeof(char**));
+    voy_array_t *arr = voy_array_new(10, sizeof(char **));
     char *strings[5] = {
-        "foo",
-        "bar",
-        "baz",
-        "hello",
-        "again",
+        "foo", "bar", "baz", "hello", "again",
     };
 
     for (unsigned int i = 0; i < 5; i++) {
@@ -286,7 +283,7 @@ char *test_array_of_strings()
 
 char *test_array_stack_items()
 {
-    voy_array_t *arr = voy_array_new(10, sizeof(char*));
+    voy_array_t *arr = voy_array_new(10, sizeof(char *));
 
     voy_array_push(arr, "John");
     voy_array_push(arr, "Jonathan");
@@ -313,11 +310,11 @@ typedef struct person_dum {
 
 char *test_array_struct_pointers()
 {
-    voy_array_t *arr = voy_array_new(10, sizeof(person_dum_t*));
-    person_dum_t *p = malloc(sizeof(person_dum_t));
-    p->first_name = "Jonathan";
-    p->last_name = "Torres";
-    p->age = 33;
+    voy_array_t *arr = voy_array_new(10, sizeof(person_dum_t *));
+    person_dum_t *p  = malloc(sizeof(person_dum_t));
+    p->first_name    = "Jonathan";
+    p->last_name     = "Torres";
+    p->age           = 33;
 
     voy_array_push(arr, p);
     voy_assert(arr->contents != NULL, "Array contents should not be NULL");
@@ -331,7 +328,7 @@ char *test_array_struct_pointers()
 
 char *test_voy_array_swap()
 {
-    voy_array_t *arr = voy_array_new(10, sizeof(int*));
+    voy_array_t *arr = voy_array_new(10, sizeof(int *));
 
     for (unsigned int i = 0; i < 5; i++) {
         int *value = malloc(sizeof(int));
@@ -342,11 +339,11 @@ char *test_voy_array_swap()
     }
 
     voy_assert(arr->len == 5, "Array len should be 5");
-    voy_assert(*(int*)voy_array_get(arr, 0) == 0, "Index 0 of array should be zero");
-    voy_assert(*(int*)voy_array_get(arr, 1) == 5, "Index 0 of array should be five");
+    voy_assert(*(int *)voy_array_get(arr, 0) == 0, "Index 0 of array should be zero");
+    voy_assert(*(int *)voy_array_get(arr, 1) == 5, "Index 0 of array should be five");
     voy_array_swap(arr, 0, 1);
-    voy_assert(*(int*)voy_array_get(arr, 0) == 5, "Index 0 of array should be five");
-    voy_assert(*(int*)voy_array_get(arr, 1) == 0, "Index 0 of array should be zero");
+    voy_assert(*(int *)voy_array_get(arr, 0) == 5, "Index 0 of array should be five");
+    voy_assert(*(int *)voy_array_get(arr, 1) == 0, "Index 0 of array should be zero");
     voy_assert(arr->len == 5, "Array len should be 5");
     voy_array_free(arr, voy_array_free_cb_func);
 

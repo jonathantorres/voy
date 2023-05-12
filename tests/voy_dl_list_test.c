@@ -1,8 +1,8 @@
-#include "voy_unittest.h"
 #include "voy_dl_list.h"
+#include "voy_unittest.h"
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
-#include <stdbool.h>
 
 // utility method to print the contents of a list
 // the list used in this test, will be a list of strings
@@ -14,15 +14,15 @@ void voy_dl_list_print(voy_dl_list_t *list)
     }
 
     printf("{");
-    VOY_DL_LIST_FOREACH(list) {
-        printf("%s,", (char*)cur->value);
+    VOY_DL_LIST_FOREACH (list) {
+        printf("%s,", (char *)cur->value);
     }
     printf("}\n");
 }
 
 int cmp_func(void *a, void *b)
 {
-    return strcmp((char*) a, (char*) b);
+    return strcmp((char *)a, (char *)b);
 }
 
 void voy_dl_list_free_func(void *value)
@@ -48,10 +48,10 @@ char *test_push()
 {
     voy_dl_list_t *list = voy_dl_list_new();
 
-    char *john = "John";
-    char *luis = "Luis";
+    char *john  = "John";
+    char *luis  = "Luis";
     char *chris = "Chris";
-    char *mar = "Marjorie";
+    char *mar   = "Marjorie";
 
     voy_dl_list_push(list, john);
     voy_dl_list_push(list, luis);
@@ -110,10 +110,10 @@ char *test_shift()
 char *test_unshift()
 {
     voy_dl_list_t *list = voy_dl_list_new();
-    char *zero = "zero";
-    char *one = "one";
-    char *two = "two";
-    char *three = "three";
+    char *zero          = "zero";
+    char *one           = "one";
+    char *two           = "two";
+    char *three         = "three";
 
     voy_dl_list_push(list, zero);
     voy_dl_list_push(list, one);
@@ -121,7 +121,7 @@ char *test_unshift()
     voy_dl_list_push(list, three);
 
     voy_assert(voy_dl_list_len(list) == 4, "List len must be 4");
-    char *value = (char*) voy_dl_list_unshift(list);
+    char *value = (char *)voy_dl_list_unshift(list);
     voy_assert(voy_dl_list_len(list) == 3, "List len must be 3");
     voy_assert(strcmp(zero, value) == 0, "List should be equal");
     voy_dl_list_free(list, NULL);
@@ -132,10 +132,10 @@ char *test_unshift()
 char *test_pop()
 {
     voy_dl_list_t *list = voy_dl_list_new();
-    char *zero = "zero";
-    char *one = "one";
-    char *two = "two";
-    char *three = "three";
+    char *zero          = "zero";
+    char *one           = "one";
+    char *two           = "two";
+    char *three         = "three";
 
     voy_dl_list_push(list, zero);
     voy_dl_list_push(list, one);
@@ -143,7 +143,7 @@ char *test_pop()
     voy_dl_list_push(list, three);
 
     voy_assert(voy_dl_list_len(list) == 4, "List len must be 4");
-    char *value = (char*) voy_dl_list_pop(list);
+    char *value = (char *)voy_dl_list_pop(list);
     voy_assert(voy_dl_list_len(list) == 3, "List len must be 3");
     voy_assert(strcmp(three, value) == 0, "List should be equal");
     voy_dl_list_free(list, NULL);
@@ -183,8 +183,10 @@ char *test_exists()
     voy_assert(voy_dl_list_exists(list, "zero", cmp_func) == true, "zero should exist in the list");
     voy_assert(voy_dl_list_exists(list, "one", cmp_func) == true, "one should exist in the list");
     voy_assert(voy_dl_list_exists(list, "two", cmp_func) == true, "two should exist in the list");
-    voy_assert(voy_dl_list_exists(list, "three", cmp_func) == true, "three should exist in the list");
-    voy_assert(voy_dl_list_exists(list, "foo", cmp_func) == false, "foo shouldn't exist in the list");
+    voy_assert(voy_dl_list_exists(list, "three", cmp_func) == true,
+               "three should exist in the list");
+    voy_assert(voy_dl_list_exists(list, "foo", cmp_func) == false,
+               "foo shouldn't exist in the list");
     voy_assert(voy_dl_list_len(list) == 4, "List len must be 4");
     voy_dl_list_free(list, NULL);
 

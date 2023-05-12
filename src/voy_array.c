@@ -5,7 +5,7 @@
 static void *voy_array_remove_element_at(voy_array_t *arr, unsigned int index)
 {
     if (arr->contents[index] != NULL) {
-        void *element = arr->contents[index];
+        void *element        = arr->contents[index];
         arr->contents[index] = NULL;
         arr->len--;
 
@@ -24,11 +24,11 @@ voy_array_t *voy_array_new(unsigned int capacity, size_t item_size)
         return NULL;
     }
 
-    arr->len = 0;
-    arr->capacity = capacity;
+    arr->len         = 0;
+    arr->capacity    = capacity;
     arr->expand_rate = EXPAND_RATE;
-    arr->item_size = item_size;
-    arr->contents = calloc(arr->capacity, arr->item_size);
+    arr->item_size   = item_size;
+    arr->contents    = calloc(arr->capacity, arr->item_size);
 
     if (!arr->contents) {
         return NULL;
@@ -72,7 +72,7 @@ void voy_array_clear(voy_array_t *arr, voy_array_free_cb cb)
 void voy_array_expand(voy_array_t *arr)
 {
     int new_capacity = arr->capacity + EXPAND_RATE;
-    void *contents = realloc(arr->contents, new_capacity * arr->item_size);
+    void *contents   = realloc(arr->contents, new_capacity * arr->item_size);
 
     if (!contents) {
         return;
@@ -161,11 +161,7 @@ void *voy_array_remove(voy_array_t *arr, unsigned int i)
     void *element = voy_array_remove_element_at(arr, i);
 
     if (element != NULL && arr->contents[i + 1] != NULL) {
-        memmove(
-            &arr->contents[i],
-            &arr->contents[i + 1],
-            sizeof(arr->item_size) * (arr->len - i)
-        );
+        memmove(&arr->contents[i], &arr->contents[i + 1], sizeof(arr->item_size) * (arr->len - i));
     }
 
     return element;
@@ -179,11 +175,7 @@ void voy_array_shift(voy_array_t *arr, void *value)
     }
 
     if (arr->len > 0) {
-        memmove(
-            &arr->contents[1],
-            arr->contents,
-            sizeof(arr->item_size) * arr->len
-        );
+        memmove(&arr->contents[1], arr->contents, sizeof(arr->item_size) * arr->len);
     }
 
     arr->contents[0] = value;
@@ -206,11 +198,7 @@ void *voy_array_unshift(voy_array_t *arr)
     if (arr->len > 0) {
         elem = voy_array_remove_element_at(arr, 0);
 
-        memmove(
-            arr->contents,
-            &arr->contents[1],
-            sizeof(arr->item_size) * arr->len
-        );
+        memmove(arr->contents, &arr->contents[1], sizeof(arr->item_size) * arr->len);
     }
 
     return elem;
@@ -224,7 +212,7 @@ void voy_array_swap(voy_array_t *arr, unsigned int a, unsigned int b)
     if (a == b) {
         return;
     }
-    if (a > arr->len-1 || b > arr->len-1) {
+    if (a > arr->len - 1 || b > arr->len - 1) {
         return;
     }
 

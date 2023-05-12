@@ -13,7 +13,7 @@ typedef struct voy_array {
     void **contents;
 } voy_array_t;
 
-typedef void(*voy_array_free_cb)(void *value);
+typedef void (*voy_array_free_cb)(void *value);
 
 voy_array_t *voy_array_new(unsigned int capacity, size_t item_size);
 void voy_array_free(voy_array_t *arr, voy_array_free_cb cb);
@@ -29,9 +29,9 @@ void voy_array_swap(voy_array_t *arr, unsigned int a, unsigned int b);
 
 // Macro usage:
 // VOY_ARRAY_FOREACH(arr) {
-    // your code here
-    // you can use the variable "i" which contains the current index
-    // you'll have to assign the current element to a variable to use it
+// your code here
+// you can use the variable "i" which contains the current index
+// you'll have to assign the current element to a variable to use it
 // }
 #define VOY_ARRAY_FOREACH(arr) for (unsigned int i = 0; i < (arr)->len; i++)
 

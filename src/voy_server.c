@@ -28,8 +28,8 @@ static int voy_bind_and_listen(int port)
 
     memset(&server_addr, 0, sizeof(struct sockaddr_in));
 
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_port = htons(port);
+    server_addr.sin_family      = AF_INET;
+    server_addr.sin_port        = htons(port);
     server_addr.sin_addr.s_addr = INADDR_ANY;
 
     // re-use the address when stopping and restarting the server
@@ -41,7 +41,7 @@ static int voy_bind_and_listen(int port)
         return -1;
     }
 
-    if (bind(server_fd, (struct sockaddr*) &server_addr, sizeof(struct sockaddr_in)) < 0) {
+    if (bind(server_fd, (struct sockaddr *)&server_addr, sizeof(struct sockaddr_in)) < 0) {
         // TODO: log this
         perror("server: bind()");
         close(server_fd);
@@ -66,7 +66,7 @@ static void voy_set_default_response_headers(voy_response_t *res)
 
 static void voy_serve_404(voy_response_t *res)
 {
-    char *not_found_msg = "Not found\n";
+    char *not_found_msg       = "Not found\n";
     char not_found_len_str[3] = {0, 0, 0};
     snprintf(not_found_len_str, 3, "%d", (int)strlen(not_found_msg));
     voy_response_set_status_code(res, 404);
@@ -109,7 +109,7 @@ static void voy_handle_conn(int conn_fd)
             free(req_buff);
             break;
         }
-        req_buff[bytes_r-1] = '\0';
+        req_buff[bytes_r - 1] = '\0';
 
         if (!req->line_is_read) {
             status = voy_request_parse_start_line(req, req_buff);
@@ -197,7 +197,7 @@ voy_array_t *get_listen_ports(voy_conf_t *conf)
         // TODO: log this error
         return NULL;
     }
-    voy_array_t *ports = voy_array_new(10, sizeof(int*));
+    voy_array_t *ports = voy_array_new(10, sizeof(int *));
 
     if (!ports) {
         return NULL;
@@ -205,7 +205,7 @@ voy_array_t *get_listen_ports(voy_conf_t *conf)
 
     // ports from the default server
     if (conf->default_server && conf->default_server->ports) {
-        VOY_ARRAY_FOREACH(conf->default_server->ports) {
+        VOY_ARRAY_FOREACH (conf->default_server->ports) {
             int *p = voy_array_get(conf->default_server->ports, i);
             if (p) {
                 voy_array_push(ports, p);
@@ -215,13 +215,13 @@ voy_array_t *get_listen_ports(voy_conf_t *conf)
 
     // ports from virtual hosts
     if (conf->vhosts) {
-        VOY_ARRAY_FOREACH(conf->vhosts) {
+        VOY_ARRAY_FOREACH (conf->vhosts) {
             voy_server_conf_t *vhost = voy_array_get(conf->vhosts, i);
             if (vhost && vhost->ports) {
-                VOY_ARRAY_FOREACH(vhost->ports) {
-                    int *p = voy_array_get(vhost->ports, i);
+                VOY_ARRAY_FOREACH (vhost->ports) {
+                    int *p       = voy_array_get(vhost->ports, i);
                     bool p_found = false;
-                    
+
                     // make sure that there are no duplicates
                     for (unsigned int j = 0; j < ports->len; j++) {
                         int *sp = voy_array_get(ports, j);
@@ -231,7 +231,7 @@ voy_array_t *get_listen_ports(voy_conf_t *conf)
                         }
                     }
                     if (p && !p_found) {
-                       voy_array_push(ports, p); 
+                        voy_array_push(ports, p);
                     }
                 }
             }
@@ -253,7 +253,7 @@ bool serve_on_port(int port)
     // TODO: initialize thread pool
 
     while (true) {
-        if ((conn_fd = accept(server_fd, (struct sockaddr*) NULL, NULL)) < 0) {
+        if ((conn_fd = accept(server_fd, (struct sockaddr *)NULL, NULL)) < 0) {
             // TODO: log this
             perror("server: accept()");
             continue;
@@ -295,9 +295,9 @@ bool voy_server_start(voy_conf_t *conf)
     // in this thread create a listener for that port
 
     // TODO: in each listener, when a request comes in,
-    // figure out which virtual server to pick 
+    // figure out which virtual server to pick
     // and serve the request accordingly
-    
+
     // TODO: wait for those threads to finish
     // probably never as long as the server
     // is running ok with no issues
@@ -306,7 +306,7 @@ bool voy_server_start(voy_conf_t *conf)
     // superuser priviledges, later on implement this
     // using the threads and whatnot
     int port = VOY_DEFAULT_PORT;
-    VOY_ARRAY_FOREACH(ports) {
+    VOY_ARRAY_FOREACH (ports) {
         int *p = voy_array_get(ports, i);
         if (p && *p > 1024) {
             port = *p;
@@ -319,7 +319,7 @@ bool voy_server_start(voy_conf_t *conf)
         return false;
     }
 
-   return true;
+    return true;
 }
 
 bool voy_server_shutdown()

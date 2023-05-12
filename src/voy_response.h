@@ -1,10 +1,10 @@
 #ifndef _voy_response_h
 #define _voy_response_h
 
+#include "voy_htable.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "voy_htable.h"
 
 #define HTTP_VERSION 1.1
 

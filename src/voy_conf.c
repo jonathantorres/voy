@@ -1,10 +1,11 @@
 #include "voy_conf.h"
 
 #define VOY_CONF_LINE_BUF_SIZE 1024
-#define VOY_CONF_LINES 50
+#define VOY_CONF_LINES         50
 
 static voy_error_page_t *voy_new_error_page(int error_code, char *error_page_file);
-static voy_array_t *voy_parse_error_pages(voy_array_t *cur_error_pages, voy_str_t *error_page_name, voy_str_t *error_page_file);
+static voy_array_t *voy_parse_error_pages(voy_array_t *cur_error_pages, voy_str_t *error_page_name,
+                                          voy_str_t *error_page_file);
 static voy_array_t *voy_parse_index_options(voy_str_t *index_pages);
 static voy_array_t *voy_parse_name_options(voy_str_t *names);
 static voy_array_t *voy_parse_port_options(voy_str_t *ports);
@@ -14,7 +15,8 @@ static voy_conf_t *voy_build_server_conf(voy_array_t *conf_arr);
 static voy_server_conf_t *voy_server_conf_new();
 static char *voy_strip_comment_from_line(char *line);
 static bool voy_check_for_syntax_errors(voy_array_t *conf_arr);
-static void voy_server_conf_add_option(voy_server_conf_t *conf, voy_str_t *op_name, voy_str_t *op_value);
+static void voy_server_conf_add_option(voy_server_conf_t *conf, voy_str_t *op_name,
+                                       voy_str_t *op_value);
 static void voy_conf_add_option(voy_conf_t *conf, voy_str_t *op_name, voy_str_t *op_value);
 static void voy_conf_add_vhost(voy_conf_t *conf, voy_server_conf_t *vhost);
 static void voy_array_strs_free_cb(void *value);
@@ -27,7 +29,7 @@ voy_conf_t *voy_conf_load(char *conf_file_path)
         return NULL;
     }
 
-    conf_arr = voy_parse_includes(conf_arr); // TODO
+    conf_arr    = voy_parse_includes(conf_arr);          // TODO
     bool status = voy_check_for_syntax_errors(conf_arr); // TODO
     if (!status) {
         // TODO: log the error
@@ -64,7 +66,7 @@ static voy_array_t *voy_open_and_strip_comments(char *conf_file_path)
     }
     memset(buf, 0, VOY_CONF_LINE_BUF_SIZE);
 
-    voy_array_t *conf_file_lines = voy_array_new(VOY_CONF_LINES, sizeof(voy_str_t*));
+    voy_array_t *conf_file_lines = voy_array_new(VOY_CONF_LINES, sizeof(voy_str_t *));
     if (!conf_file_lines) {
         // TODO: log this
         free(buf);
@@ -77,7 +79,7 @@ static voy_array_t *voy_open_and_strip_comments(char *conf_file_path)
         if (*buf == VOY_COMMENT_SIGN) {
             continue;
         }
-        buf = voy_strip_comment_from_line(buf);
+        buf                 = voy_strip_comment_from_line(buf);
         voy_str_t *cur_line = voy_str_new(buf);
         if (!cur_line) {
             // TODO: log this
@@ -97,7 +99,7 @@ static voy_array_t *voy_open_and_strip_comments(char *conf_file_path)
 
 static char *voy_strip_comment_from_line(char *line)
 {
-    size_t len = strlen(line);
+    size_t len        = strlen(line);
     int comment_index = -1;
 
     for (int i = 0; i < (int)len; i++) {
@@ -107,8 +109,8 @@ static char *voy_strip_comment_from_line(char *line)
         }
     }
     if (comment_index >= 0) {
-        line[comment_index] = '\n';
-        line[comment_index+1] = '\0';
+        line[comment_index]     = '\n';
+        line[comment_index + 1] = '\0';
     }
     return line;
 }
@@ -120,7 +122,8 @@ static voy_array_t *voy_parse_includes(voy_array_t *conf_arr)
 
 static bool voy_check_for_syntax_errors(voy_array_t *conf_arr)
 {
-    if (conf_arr) {}
+    if (conf_arr) {
+    }
     return true;
 }
 
@@ -143,9 +146,9 @@ static voy_conf_t *voy_build_server_conf(voy_array_t *conf_arr)
     conf->vhosts         = NULL;
 
     voy_server_conf_t *cur_vhost = NULL;
-    bool inside_vhost = false;
+    bool inside_vhost            = false;
 
-    VOY_ARRAY_FOREACH(conf_arr) {
+    VOY_ARRAY_FOREACH (conf_arr) {
         voy_str_t *line = voy_array_get(conf_arr, i);
 
         if (voy_str_contains_char(line, VOY_EQUAL_SIGN)) {
@@ -155,7 +158,7 @@ static voy_conf_t *voy_build_server_conf(voy_array_t *conf_arr)
                 // log the error here
                 continue;
             }
-            voy_str_t *op_name = voy_array_get(ops, 0);
+            voy_str_t *op_name  = voy_array_get(ops, 0);
             voy_str_t *op_value = voy_array_get(ops, 1);
             voy_str_trim(op_name);
             voy_str_trim(op_value);
@@ -184,7 +187,8 @@ static voy_conf_t *voy_build_server_conf(voy_array_t *conf_arr)
     return conf;
 }
 
-static void voy_server_conf_add_option(voy_server_conf_t *conf, voy_str_t *op_name, voy_str_t *op_value)
+static void voy_server_conf_add_option(voy_server_conf_t *conf, voy_str_t *op_name,
+                                       voy_str_t *op_value)
 {
     if (!conf) {
         return;
@@ -252,7 +256,7 @@ static void voy_conf_add_vhost(voy_conf_t *conf, voy_server_conf_t *vhost)
         return;
     }
     if (conf->vhosts == NULL) {
-        conf->vhosts = voy_array_new(10, sizeof(voy_server_conf_t*));
+        conf->vhosts = voy_array_new(10, sizeof(voy_server_conf_t *));
     }
 
     voy_array_push(conf->vhosts, vhost);
@@ -265,14 +269,14 @@ static voy_array_t *voy_parse_name_options(voy_str_t *names)
         return NULL;
     }
 
-    voy_array_t *server_names = voy_array_new(10, sizeof(voy_str_t*));
+    voy_array_t *server_names = voy_array_new(10, sizeof(voy_str_t *));
     if (!server_names) {
         voy_array_free(found_names, voy_array_strs_free_cb);
         return NULL;
     }
 
-    VOY_ARRAY_FOREACH(found_names) {
-        bool name_found = false;
+    VOY_ARRAY_FOREACH (found_names) {
+        bool name_found     = false;
         voy_str_t *cur_name = voy_array_get(found_names, i);
 
         // make sure that there are no duplicates
@@ -306,14 +310,14 @@ static voy_array_t *voy_parse_port_options(voy_str_t *ports)
         return NULL;
     }
 
-    voy_array_t *server_ports = voy_array_new(10, sizeof(int*));
+    voy_array_t *server_ports = voy_array_new(10, sizeof(int *));
     if (!server_ports) {
         voy_array_free(found_ports, voy_array_strs_free_cb);
         return NULL;
     }
 
-    VOY_ARRAY_FOREACH(found_ports) {
-        bool port_found = false;
+    VOY_ARRAY_FOREACH (found_ports) {
+        bool port_found     = false;
         voy_str_t *cur_port = voy_array_get(found_ports, i);
         voy_str_trim(cur_port);
         int port_int = atoi(cur_port->string);
@@ -349,14 +353,14 @@ static voy_array_t *voy_parse_index_options(voy_str_t *index_pages)
         return NULL;
     }
 
-    voy_array_t *server_index_pages = voy_array_new(10, sizeof(voy_str_t*));
+    voy_array_t *server_index_pages = voy_array_new(10, sizeof(voy_str_t *));
     if (!server_index_pages) {
         voy_array_free(found_pages, voy_array_strs_free_cb);
         return NULL;
     }
 
-    VOY_ARRAY_FOREACH(found_pages) {
-        bool page_found = false;
+    VOY_ARRAY_FOREACH (found_pages) {
+        bool page_found       = false;
         voy_str_t *cur_i_page = voy_array_get(found_pages, i);
 
         // make sure that there are no duplicates
@@ -383,7 +387,8 @@ static voy_array_t *voy_parse_index_options(voy_str_t *index_pages)
     return server_index_pages;
 }
 
-static voy_array_t *voy_parse_error_pages(voy_array_t *cur_error_pages, voy_str_t *error_page_name, voy_str_t *error_page_file)
+static voy_array_t *voy_parse_error_pages(voy_array_t *cur_error_pages, voy_str_t *error_page_name,
+                                          voy_str_t *error_page_file)
 {
     voy_array_t *err_page_pieces = voy_str_split_by_char(error_page_name, '_');
     if (!err_page_pieces) {
@@ -394,7 +399,7 @@ static voy_array_t *voy_parse_error_pages(voy_array_t *cur_error_pages, voy_str_
     if (cur_error_pages) {
         server_error_pages = cur_error_pages;
     } else {
-        server_error_pages = voy_array_new(10, sizeof(voy_error_page_t*));
+        server_error_pages = voy_array_new(10, sizeof(voy_error_page_t *));
         if (!server_error_pages) {
             voy_array_free(err_page_pieces, voy_array_strs_free_cb);
             return NULL;
@@ -405,8 +410,8 @@ static voy_array_t *voy_parse_error_pages(voy_array_t *cur_error_pages, voy_str_
 
     if (err_page_pieces->len == 3) {
         // specifying a code for the error page
-        voy_str_t *str_error_code  = voy_array_get(err_page_pieces, 2);
-        spec_error_code = atoi(str_error_code->string);
+        voy_str_t *str_error_code = voy_array_get(err_page_pieces, 2);
+        spec_error_code           = atoi(str_error_code->string);
     } else if (err_page_pieces->len == 2) {
         // a general error page for all error codes
         // nothing to do here :)
@@ -464,13 +469,14 @@ static voy_error_page_t *voy_new_error_page(int error_code, char *error_page_fil
 
 void voy_conf_free(voy_conf_t *conf)
 {
-    if (conf) {}
+    if (conf) {
+    }
     // TODO: cleanup everything about the configuration file
 }
 
 static void voy_array_strs_free_cb(void *value)
 {
     if (value) {
-        voy_str_free((voy_str_t*)value);
+        voy_str_free((voy_str_t *)value);
     }
 }

@@ -1,6 +1,6 @@
-#include <string.h>
-#include "voy_unittest.h"
 #include "voy_htable.h"
+#include "voy_unittest.h"
+#include <string.h>
 
 int gen_random_number(int lower, int upper)
 {
@@ -20,13 +20,13 @@ char *alloc_rand_str()
 
 int voy_htable_compare_fn(void *a, void *b)
 {
-    return strcmp((char*)a, (char*)b);
+    return strcmp((char *)a, (char *)b);
 }
 
 int voy_htable_int_compare_fn(void *a, void *b)
 {
-    int val1 = *(int*)a;
-    int val2 = *(int*)b;
+    int val1 = *(int *)a;
+    int val2 = *(int *)b;
     if (val1 > val2) {
         return 1;
     } else if (val1 < val2) {
@@ -70,7 +70,8 @@ char *test_create()
 {
     voy_htable_t *htable = voy_htable_new(voy_htable_compare_fn);
     voy_assert(htable != NULL, "Hasvoy_htable cannot be NULL");
-    voy_assert(htable->cmp == voy_htable_compare_fn, "Hasvoy_htable must use the correct compare function");
+    voy_assert(htable->cmp == voy_htable_compare_fn,
+               "Hasvoy_htable must use the correct compare function");
     voy_assert(htable->buckets != NULL, "Hasvoy_htable buckets cannot be NULL");
     voy_htable_free(htable, NULL);
     return NULL;
@@ -103,9 +104,9 @@ char *test_set()
 
 char *test_get()
 {
-    char *first_key = "john";
-    char *second_key = "luis";
-    char *first_value = "Jonathan Torres";
+    char *first_key    = "john";
+    char *second_key   = "luis";
+    char *first_value  = "Jonathan Torres";
     char *second_value = "Jorge L Torres";
 
     voy_htable_t *htable = voy_htable_new(voy_htable_compare_fn);
@@ -127,9 +128,9 @@ char *test_get()
 
 char *test_remove()
 {
-    char *first_key = "john";
-    char *second_key = "luis";
-    char *first_value = "Jonathan Torres";
+    char *first_key    = "john";
+    char *second_key   = "luis";
+    char *first_value  = "Jonathan Torres";
     char *second_value = "Jorge L Torres";
 
     voy_htable_t *htable = voy_htable_new(voy_htable_compare_fn);
@@ -137,7 +138,8 @@ char *test_remove()
     voy_htable_set(htable, second_key, second_value);
     char *value = voy_htable_remove(htable, first_key, NULL);
     voy_assert(value != NULL, "Value for key 'john' could not be removed");
-    voy_assert(strcmp(value, first_value) == 0, "Value for the removed key 'john' should be 'Jonathan Torres'");
+    voy_assert(strcmp(value, first_value) == 0,
+               "Value for the removed key 'john' should be 'Jonathan Torres'");
     value = voy_htable_get(htable, first_key);
     voy_assert(value == NULL, "Value for the removed key 'john' should be NULL");
     voy_htable_free(htable, NULL);
@@ -147,9 +149,9 @@ char *test_remove()
 
 char *test_traverse()
 {
-    char *first_key = "john";
-    char *second_key = "luis";
-    char *first_value = "Jonathan Torres";
+    char *first_key    = "john";
+    char *second_key   = "luis";
+    char *first_value  = "Jonathan Torres";
     char *second_value = "Jorge L Torres";
 
     voy_htable_t *htable = voy_htable_new(voy_htable_compare_fn);
@@ -176,9 +178,9 @@ char *test_benchmark()
 
 char *test_int_keys()
 {
-    int key1 = 30;
-    int key2 = 40;
-    int key3 = 41;
+    int key1   = 30;
+    int key2   = 40;
+    int key3   = 41;
     char *val1 = "Jonathan Torres";
     char *val2 = "Jorge L Torres";
     char *val3 = "This is another thing";
