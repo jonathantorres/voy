@@ -1,0 +1,23 @@
+BasedOnStyle: LLVM
+Language: Cpp
+Standard: c++11
+IndentWidth: 4
+TabWidth: 4
+ColumnLimit: 100
+UseTab: Never
+AlignConsecutiveAssignments: true
+AlignConsecutiveBitFields: true
+AlignConsecutiveMacros: true
+AllowShortEnumsOnASingleLine: true
+AllowShortFunctionsOnASingleLine: None
+BreakBeforeBraces: Linux
+IndentCaseBlocks: true
+IndentCaseLabels: true
+SpaceAfterCStyleCast: false
+ForEachMacros: [
+    'VOY_DL_LIST_FOREACH',
+    'VOY_ARRAY_FOREACH',
+    'VOY_HTABLE_FOREACH',
+]
+MacroBlockBegin: ''
+MacroBlockEnd: 'VOY_HTABLE_FOREACH_END'
