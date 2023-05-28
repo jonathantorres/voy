@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/wait.h>
+#include <unistd.h>
 
 #include "voy_conf.h"
 #include "voy_log.h"
@@ -14,57 +15,38 @@
 #define DEFAULT_CONF_FILE DEFAULT_PREFIX "/conf/voy.conf"
 #define DEFAULT_LOG_FILE  DEFAULT_PREFIX "/log/voy.log"
 
-typedef enum {
-    VOY_ARG_NONE,
-    VOY_ARG_VERSION,
-    VOY_ARG_OK,
-    VOY_ARG_ERR_LOG_FILE,
-    VOY_ARG_ERR_CONF_FILE,
-    VOY_ARG_ERR_UNKNOWN,
-} voy_args_status_t;
-
 void debug_conf(voy_conf_t *conf);
 static void voy_print_usage();
 static void voy_print_version();
 static void handle_signals();
-static voy_args_status_t voy_parse_args(int argc, char **argv);
 
-static char *log_file_path        = NULL;
-static char *conf_file_path       = NULL;
-static char *args_err_unknown_arg = NULL;
+static char *log_file_path  = NULL;
+static char *conf_file_path = NULL;
 
 int main(int argc, char **argv)
 {
-    voy_args_status_t args_status = voy_parse_args(argc, argv);
-    switch (args_status) {
-        case VOY_ARG_NONE:
-            // no arguments passed, should we run on the background?
-            // we have to load the configuration file
-            // from whatever location is configured to use
-            voy_print_usage();
-            break;
-        case VOY_ARG_VERSION:
-            voy_print_version();
-            break;
-        case VOY_ARG_ERR_LOG_FILE:
-            fprintf(stderr, "%s", "error: path to the log file must be specified\n");
-            voy_print_usage();
-            break;
-        case VOY_ARG_ERR_CONF_FILE:
-            fprintf(stderr, "%s", "error: configuration file must be specified\n");
-            voy_print_usage();
-            break;
-        case VOY_ARG_ERR_UNKNOWN:
-            fprintf(stderr, "%s", "error: unknown error");
-            if (args_err_unknown_arg) {
-                fprintf(stderr, " %s", args_err_unknown_arg);
-            }
-            fprintf(stderr, "\n");
-            voy_print_usage();
-            break;
-        case VOY_ARG_OK:
-            // all good, nothing to do
-            break;
+    int opt;
+
+    while ((opt = getopt(argc, argv, "hvc:l:")) != -1) {
+        switch (opt) {
+            case 'v':
+                voy_print_version();
+                break;
+            case 'h':
+                voy_print_usage();
+                break;
+            case 'c':
+                /* fprintf(stderr, "%s", "error: path to the log file must be specified\n"); */
+                conf_file_path = optarg;
+                break;
+            case 'l':
+                /* fprintf(stderr, "%s", "error: path to the log file must be specified\n"); */
+                log_file_path = optarg;
+                break;
+            default:
+                voy_print_usage();
+                break;
+        }
     }
 
     // TODO: initialize logging mechanism
@@ -153,37 +135,6 @@ static void handle_signals()
     if (sigaction(SIGCHLD, &act, NULL) == -1) {
         // TODO: log the error
     }
-}
-
-static voy_args_status_t voy_parse_args(int argc, char **argv)
-{
-    if (argc <= 1) {
-        return VOY_ARG_NONE;
-    }
-
-    for (int i = 1; i < argc; i++) {
-        char *cur_arg = argv[i];
-        if (strcmp(cur_arg, "-v") == 0 || strcmp(cur_arg, "--version") == 0) {
-            return VOY_ARG_VERSION;
-        } else if (strcmp(cur_arg, "-c") == 0 || strcmp(cur_arg, "--config") == 0) {
-            i++;
-            if (argv[i] == NULL) {
-                return VOY_ARG_ERR_CONF_FILE;
-            }
-            conf_file_path = argv[i];
-        } else if (strcmp(cur_arg, "-l") == 0 || strcmp(cur_arg, "--log") == 0) {
-            i++;
-            if (argv[i] == NULL) {
-                return VOY_ARG_ERR_LOG_FILE;
-            }
-            log_file_path = argv[i];
-        } else {
-            args_err_unknown_arg = cur_arg;
-            return VOY_ARG_ERR_UNKNOWN;
-        }
-    }
-
-    return VOY_ARG_OK;
 }
 
 void debug_conf(voy_conf_t *conf)
