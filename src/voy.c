@@ -252,13 +252,14 @@ static void voy_print_version()
 
 static void voy_print_usage()
 {
-    fprintf(stderr, "voy [-v] [--version]\n");
-    fprintf(stderr, "    [-c <file> | --config <file>]\n");
-    fprintf(stderr, "    [-l <path> | --log <path>]\n");
-    fprintf(stderr, "\n-v --version\tPrint version and exit");
-    fprintf(stderr, "\n-c <file>\tUse the specified configuration file (default is %s)",
+    fprintf(stderr, "Usage: voy -[chlv] [-c conf] [-l path]\n");
+    fprintf(stderr, "\n");
+    fprintf(stderr, "Options:\n");
+    fprintf(stderr, "  -h\t\t: This help menu\n");
+    fprintf(stderr, "  -v\t\t: Show server version and exit\n");
+    fprintf(stderr, "  -c filename\t: Use the specified configuration file (default is %s)\n",
             DEFAULT_CONF_FILE);
-    fprintf(stderr, "\n-l <path>\tStore logs in this location (default is %s)", DEFAULT_LOG_FILE);
+    fprintf(stderr, "  -l path\t: Store logs in this location (default is %s)\n", DEFAULT_LOG_FILE);
     fprintf(stderr, "\n");
     exit(EXIT_SUCCESS);
 }
