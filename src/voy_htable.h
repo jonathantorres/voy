@@ -28,18 +28,18 @@ void *voy_htable_remove(voy_htable_t *htable, void *key, voy_htable_cb cb);
 void voy_htable_traverse(voy_htable_t *htable, voy_htable_cb cb);
 
 // Macro Usage:
-// VOY_HTABLE_FOREACH(htable) {
+// VOY_HTABLE_FOREACH(htable, elem, i, j) {
 // use elem
 // elem is the current voy_htable_node_t
 // } VOY_HTABLE_FOREACH_END
-#define VOY_HTABLE_FOREACH(htable)                                                                 \
+#define VOY_HTABLE_FOREACH(htable, elem, i, j)                                                     \
     if ((htable)->buckets) {                                                                       \
-        for (unsigned int i = 0; i < (htable)->buckets->len; i++) {                                \
-            voy_array_t *bucket = voy_array_get((htable)->buckets, i);                             \
+        for (int(i) = 0; (i) < (htable)->buckets->len; (i)++) {                                    \
+            voy_array_t *bucket = voy_array_get((htable)->buckets, (i));                           \
             if (bucket) {                                                                          \
-                for (unsigned int j = 0; j < bucket->len; j++) {                                   \
-                    voy_htable_node_t *elem = voy_array_get(bucket, j);                            \
-                    if (elem)
+                for (int(j) = 0; (j) < bucket->len; (j)++) {                                       \
+                    voy_htable_node_t *(elem) = voy_array_get(bucket, (j));                        \
+                    if ((elem))
 
 #define VOY_HTABLE_FOREACH_END                                                                     \
     }                                                                                              \

@@ -13,19 +13,20 @@ static size_t voy_htable_fnv1a_hash(const char *cp)
     return hash;
 }
 
-static bool voy_htable_bucket_index_is_valid(unsigned int bucket_index)
+static bool voy_htable_bucket_index_is_valid(int bucket_index)
 {
     if (bucket_index >= NUM_OF_BUCKETS) {
         return false;
     }
+
     return true;
 }
 
 static voy_array_t *voy_htable_find_bucket(voy_htable_t *htable, void *key, size_t *bucket_hash,
                                            bool create_new)
 {
-    *bucket_hash              = voy_htable_fnv1a_hash(key);
-    unsigned int bucket_index = *bucket_hash % NUM_OF_BUCKETS;
+    *bucket_hash     = voy_htable_fnv1a_hash(key);
+    int bucket_index = *bucket_hash % NUM_OF_BUCKETS;
 
     if (!voy_htable_bucket_index_is_valid(bucket_index)) {
         return NULL;
@@ -62,10 +63,10 @@ void voy_htable_free(voy_htable_t *htable, voy_htable_cb cb)
     }
 
     if (htable->buckets) {
-        for (unsigned int i = 0; i < htable->buckets->len; i++) {
+        for (int i = 0; i < htable->buckets->len; i++) {
             voy_array_t *bucket = voy_array_get(htable->buckets, i);
             if (bucket) {
-                for (unsigned int j = 0; j < bucket->len; j++) {
+                for (int j = 0; j < bucket->len; j++) {
                     voy_htable_node_t *elem = voy_array_get(bucket, j);
                     if (elem) {
                         if (cb) {
@@ -119,7 +120,7 @@ void *voy_htable_get(voy_htable_t *htable, void *key)
         return NULL;
     }
 
-    for (unsigned int i = 0; i < bucket->len; i++) {
+    for (int i = 0; i < bucket->len; i++) {
         voy_htable_node_t *node = voy_array_get(bucket, i);
         if (node && node->hash == bucket_hash && htable->cmp(node->key, key) == 0) {
             return node->value;
@@ -138,11 +139,12 @@ void *voy_htable_remove(voy_htable_t *htable, void *key, voy_htable_cb cb)
     void *value         = NULL;
     size_t bucket_hash  = 0;
     voy_array_t *bucket = voy_htable_find_bucket(htable, key, &bucket_hash, false);
+
     if (!bucket) {
         return value;
     }
 
-    for (unsigned int i = 0; i < bucket->len; i++) {
+    for (int i = 0; i < bucket->len; i++) {
         voy_htable_node_t *node = voy_array_get(bucket, i);
         if (node && node->hash == bucket_hash && htable->cmp(node->key, key) == 0) {
             value      = node->value;
@@ -150,9 +152,11 @@ void *voy_htable_remove(voy_htable_t *htable, void *key, voy_htable_cb cb)
             if (last != node) {
                 voy_array_set(bucket, last, i);
             }
+
             if (cb) {
                 cb(node->key, node->value);
             }
+
             free(node);
             break;
         }
@@ -167,11 +171,12 @@ void voy_htable_traverse(voy_htable_t *htable, voy_htable_cb cb)
         return;
     }
 
-    for (unsigned int i = 0; i < htable->buckets->len; i++) {
+    for (int i = 0; i < htable->buckets->len; i++) {
         voy_array_t *bucket = voy_array_get(htable->buckets, i);
         if (bucket) {
-            for (unsigned int j = 0; j < bucket->len; j++) {
+            for (int j = 0; j < bucket->len; j++) {
                 voy_htable_node_t *node = voy_array_get(bucket, j);
+
                 if (node) {
                     if (cb) {
                         cb(node->key, node->value);

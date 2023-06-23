@@ -2,7 +2,7 @@
 
 #define EXPAND_RATE 100
 
-static void *voy_array_remove_element_at(voy_array_t *arr, unsigned int index)
+static void *voy_array_remove_element_at(voy_array_t *arr, int index)
 {
     if (arr->contents[index] != NULL) {
         void *element        = arr->contents[index];
@@ -16,7 +16,7 @@ static void *voy_array_remove_element_at(voy_array_t *arr, unsigned int index)
 }
 
 // creates a new empty array
-voy_array_t *voy_array_new(unsigned int capacity, size_t item_size)
+voy_array_t *voy_array_new(int capacity, size_t item_size)
 {
     voy_array_t *arr = malloc(sizeof(voy_array_t));
 
@@ -56,9 +56,9 @@ void voy_array_clear(voy_array_t *arr, voy_array_free_cb cb)
         return;
     }
 
-    unsigned int array_len = arr->len;
+    int array_len = arr->len;
 
-    for (unsigned int i = 0; i < array_len; i++) {
+    for (int i = 0; i < array_len; i++) {
         if (arr->contents[i]) {
             if (cb) {
                 cb(arr->contents[i]);
@@ -114,7 +114,7 @@ void *voy_array_pop(voy_array_t *arr)
 }
 
 // add/set element at index
-void voy_array_set(voy_array_t *arr, void *elem, unsigned int i)
+void voy_array_set(voy_array_t *arr, void *elem, int i)
 {
     if (!arr) {
         return;
@@ -132,7 +132,7 @@ void voy_array_set(voy_array_t *arr, void *elem, unsigned int i)
 }
 
 // get element at index
-void *voy_array_get(voy_array_t *arr, unsigned int i)
+void *voy_array_get(voy_array_t *arr, int i)
 {
     if (!arr) {
         return NULL;
@@ -147,7 +147,7 @@ void *voy_array_get(voy_array_t *arr, unsigned int i)
 }
 
 // remove element at index and return it
-void *voy_array_remove(voy_array_t *arr, unsigned int i)
+void *voy_array_remove(voy_array_t *arr, int i)
 {
     if (!arr) {
         return NULL;
@@ -204,23 +204,27 @@ void *voy_array_unshift(voy_array_t *arr)
     return elem;
 }
 
-void voy_array_swap(voy_array_t *arr, unsigned int a, unsigned int b)
+void voy_array_swap(voy_array_t *arr, int a, int b)
 {
     if (!arr) {
         return;
     }
+
     if (a == b) {
         return;
     }
+
     if (a > arr->len - 1 || b > arr->len - 1) {
         return;
     }
 
     void *a_tmp = voy_array_get(arr, a);
     void *b_tmp = voy_array_get(arr, b);
+
     if (!a_tmp || !b_tmp) {
         return;
     }
+
     voy_array_set(arr, b_tmp, a);
     voy_array_set(arr, a_tmp, b);
 }

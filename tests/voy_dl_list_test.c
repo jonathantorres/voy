@@ -14,7 +14,7 @@ void voy_dl_list_print(voy_dl_list_t *list)
     }
 
     printf("{");
-    VOY_DL_LIST_FOREACH (list) {
+    VOY_DL_LIST_FOREACH (list, cur) {
         printf("%s,", (char *)cur->value);
     }
     printf("}\n");

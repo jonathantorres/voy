@@ -2,7 +2,7 @@
 
 static char *create_string(char *chars)
 {
-    int len      = strlen(chars);
+    size_t len   = strlen(chars);
     char *string = malloc(len + 1);
     if (!string) {
         return NULL;
@@ -18,7 +18,8 @@ static char *create_string(char *chars)
 
 static char *concat_chars(char *cur_str, char *chars)
 {
-    unsigned long chars_len = strlen(chars);
+    size_t chars_len = strlen(chars);
+
     if (chars_len == 0) {
         return cur_str;
     }
@@ -106,7 +107,7 @@ voy_str_t *voy_str_concat_voy_str(voy_str_t *str, voy_str_t *chars)
     if (!str || !chars) {
         return str;
     }
-    unsigned long chars_len = strlen(chars->string);
+    size_t chars_len = strlen(chars->string);
 
     str->string  = concat_chars(str->string, chars->string);
     str->start_p = str->string;
@@ -120,7 +121,7 @@ voy_str_t *voy_str_concat(voy_str_t *str, char *chars)
     if (!str || !chars) {
         return str;
     }
-    unsigned long chars_len = strlen(chars);
+    size_t chars_len = strlen(chars);
 
     str->string  = concat_chars(str->string, chars);
     str->start_p = str->string;

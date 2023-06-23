@@ -48,7 +48,7 @@ char *test_get_string()
     voy_str_t *str = voy_str_new("Jonathan");
     char *string   = voy_str_get_string(str);
     voy_assert(string != NULL, "The string should not be NULL");
-    voy_assert(strlen(string) == (unsigned long)str->len,
+    voy_assert(strlen(string) == (size_t)str->len,
                "The lengths of str and the string should be equal");
     voy_str_free(str);
     return NULL;

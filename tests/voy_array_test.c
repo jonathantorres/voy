@@ -13,7 +13,7 @@ void voy_array_print(voy_array_t *arr, char type)
     }
 
     printf("[");
-    VOY_ARRAY_FOREACH (arr) {
+    VOY_ARRAY_FOREACH (arr, i) {
         void *val = NULL;
         switch (type) {
             case 'i':
@@ -57,7 +57,7 @@ char *test_free()
 {
     voy_array_t *arr = voy_array_new(100, sizeof(int *));
 
-    for (unsigned int i = 0; i < 100; i++) {
+    for (int i = 0; i < 100; i++) {
         int *value = malloc(sizeof(int));
         if (value != NULL) {
             *value = i * 5;
@@ -77,7 +77,7 @@ char *test_clear()
 {
     voy_array_t *arr = voy_array_new(100, sizeof(int *));
 
-    for (unsigned int i = 0; i < 100; i++) {
+    for (int i = 0; i < 100; i++) {
         int *value = malloc(sizeof(int));
         if (value != NULL) {
             *value = i * 5;
@@ -100,7 +100,7 @@ char *test_push()
 {
     voy_array_t *arr = voy_array_new(10, sizeof(int *));
 
-    for (unsigned int i = 0; i < 100; i++) {
+    for (int i = 0; i < 100; i++) {
         int *value = malloc(sizeof(int));
         if (value != NULL) {
             *value = i * 5;
@@ -120,7 +120,7 @@ char *test_pop()
 {
     voy_array_t *arr = voy_array_new(10, sizeof(int *));
 
-    for (unsigned int i = 0; i < 5; i++) {
+    for (int i = 0; i < 5; i++) {
         int *value = malloc(sizeof(int));
         if (value != NULL) {
             *value = i * 5;
@@ -143,7 +143,7 @@ char *test_set()
 {
     voy_array_t *arr = voy_array_new(10, sizeof(int *));
 
-    for (unsigned int i = 0; i < 5; i++) {
+    for (int i = 0; i < 5; i++) {
         int *value = malloc(sizeof(int));
         if (value != NULL) {
             *value = i * 5;
@@ -163,7 +163,7 @@ char *test_get()
 {
     voy_array_t *arr = voy_array_new(10, sizeof(int *));
 
-    for (unsigned int i = 0; i < 5; i++) {
+    for (int i = 0; i < 5; i++) {
         int *value = malloc(sizeof(int));
         if (value != NULL) {
             *value = i * 5;
@@ -184,7 +184,7 @@ char *test_remove()
 {
     voy_array_t *arr = voy_array_new(10, sizeof(int *));
 
-    for (unsigned int i = 0; i < 5; i++) {
+    for (int i = 0; i < 5; i++) {
         int *value = malloc(sizeof(int));
         if (value != NULL) {
             *value = i * 5;
@@ -206,7 +206,7 @@ char *test_shift()
 {
     voy_array_t *arr = voy_array_new(10, sizeof(int *));
 
-    for (unsigned int i = 0; i < 5; i++) {
+    for (int i = 0; i < 5; i++) {
         int *value = malloc(sizeof(int));
         if (value != NULL) {
             *value = i * 5;
@@ -232,7 +232,7 @@ char *test_unshift()
 {
     voy_array_t *arr = voy_array_new(10, sizeof(int *));
 
-    for (unsigned int i = 0; i < 5; i++) {
+    for (int i = 0; i < 5; i++) {
         int *value = malloc(sizeof(int));
         if (value != NULL) {
             *value = i * 5;
@@ -257,7 +257,7 @@ char *test_array_of_strings()
         "foo", "bar", "baz", "hello", "again",
     };
 
-    for (unsigned int i = 0; i < 5; i++) {
+    for (int i = 0; i < 5; i++) {
         char *string = malloc(10);
         if (string != NULL) {
             strcpy(string, strings[i]);
@@ -330,7 +330,7 @@ char *test_voy_array_swap()
 {
     voy_array_t *arr = voy_array_new(10, sizeof(int *));
 
-    for (unsigned int i = 0; i < 5; i++) {
+    for (int i = 0; i < 5; i++) {
         int *value = malloc(sizeof(int));
         if (value != NULL) {
             *value = i * 5;

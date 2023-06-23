@@ -31,12 +31,9 @@ void voy_dl_list_remove(voy_dl_list_t *list, void *value, voy_dl_list_cmp cmp,
 bool voy_dl_list_exists(voy_dl_list_t *list, void *value, voy_dl_list_cmp cmp);
 
 // Macro usage:
-// VOY_DL_LIST_FOREACH(list) {
-// your code here
-// you can use the variable "cur"
-// inside of it that references the current item of the list
+// VOY_DL_LIST_FOREACH(list, cur) {
+//   your code here
 // }
-#define VOY_DL_LIST_FOREACH(list)                                                                  \
-    for (voy_dl_list_node_t *cur = (list)->first; cur != NULL; cur = cur->next)
-
+#define VOY_DL_LIST_FOREACH(list, cur)                                                             \
+    for (voy_dl_list_node_t * (cur) = (list)->first; (cur) != NULL; (cur) = (cur)->next)
 #endif
