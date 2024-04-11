@@ -168,7 +168,7 @@ bool voy_request_parse_headers(voy_request_t *req, char *buffer)
         free(key);
     }
 
-    VOY_ARRAY_FOREACH (header_lines) {
+    VOY_ARRAY_FOREACH (header_lines, i) {
         char *cur_l = voy_array_get(header_lines, i);
         if (cur_l) {
             free(cur_l);
@@ -268,7 +268,7 @@ void voy_request_free(voy_request_t *req)
     }
 
     if (req->headers) {
-        VOY_HTABLE_FOREACH (req->headers) {
+        VOY_HTABLE_FOREACH (req->headers, elem, i, j) {
             free(elem->value);
         }
         VOY_HTABLE_FOREACH_END
@@ -276,7 +276,7 @@ void voy_request_free(voy_request_t *req)
     }
 
     if (req->uri_params) {
-        VOY_HTABLE_FOREACH (req->uri_params) {
+        VOY_HTABLE_FOREACH (req->uri_params, elem, i, j) {
             free(elem->value);
         }
         VOY_HTABLE_FOREACH_END

@@ -148,7 +148,7 @@ static voy_conf_t *voy_build_server_conf(voy_array_t *conf_arr)
     voy_server_conf_t *cur_vhost = NULL;
     bool inside_vhost            = false;
 
-    VOY_ARRAY_FOREACH (conf_arr) {
+    VOY_ARRAY_FOREACH (conf_arr, i) {
         voy_str_t *line = voy_array_get(conf_arr, i);
 
         if (voy_str_contains_char(line, VOY_EQUAL_SIGN)) {
@@ -275,7 +275,7 @@ static voy_array_t *voy_parse_name_options(voy_str_t *names)
         return NULL;
     }
 
-    VOY_ARRAY_FOREACH (found_names) {
+    VOY_ARRAY_FOREACH (found_names, i) {
         bool name_found     = false;
         voy_str_t *cur_name = voy_array_get(found_names, i);
 
@@ -316,7 +316,7 @@ static voy_array_t *voy_parse_port_options(voy_str_t *ports)
         return NULL;
     }
 
-    VOY_ARRAY_FOREACH (found_ports) {
+    VOY_ARRAY_FOREACH (found_ports, i) {
         bool port_found     = false;
         voy_str_t *cur_port = voy_array_get(found_ports, i);
         voy_str_trim(cur_port);
@@ -359,7 +359,7 @@ static voy_array_t *voy_parse_index_options(voy_str_t *index_pages)
         return NULL;
     }
 
-    VOY_ARRAY_FOREACH (found_pages) {
+    VOY_ARRAY_FOREACH (found_pages, i) {
         bool page_found       = false;
         voy_str_t *cur_i_page = voy_array_get(found_pages, i);
 

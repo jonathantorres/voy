@@ -20,4 +20,4 @@ ForEachMacros: [
     'VOY_HTABLE_FOREACH',
 ]
 MacroBlockBegin: ''
-MacroBlockEnd: 'VOY_HTABLE_FOREACH_END'
+MacroBlockEnd: ''

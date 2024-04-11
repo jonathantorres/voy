@@ -141,19 +141,19 @@ void debug_conf(voy_conf_t *conf)
 {
     if (conf && conf->default_server) {
         if (conf->default_server->ports) {
-            VOY_ARRAY_FOREACH (conf->default_server->ports) {
+            VOY_ARRAY_FOREACH (conf->default_server->ports, i) {
                 int *n = voy_array_get(conf->default_server->ports, i);
                 printf("found port: %d\n", *n);
             }
         }
         if (conf->default_server->index_pages) {
-            VOY_ARRAY_FOREACH (conf->default_server->index_pages) {
+            VOY_ARRAY_FOREACH (conf->default_server->index_pages, i) {
                 voy_str_t *i_page = voy_array_get(conf->default_server->index_pages, i);
                 printf("found index page: %s\n", i_page->string);
             }
         }
         if (conf->default_server->error_pages) {
-            VOY_ARRAY_FOREACH (conf->default_server->error_pages) {
+            VOY_ARRAY_FOREACH (conf->default_server->error_pages, i) {
                 voy_error_page_t *err_page = voy_array_get(conf->default_server->error_pages, i);
                 printf("found error page (code): %d\n", *(err_page->code));
                 printf("found error page (path): %s\n", err_page->page->string);
@@ -162,7 +162,7 @@ void debug_conf(voy_conf_t *conf)
     }
 
     if (conf && conf->vhosts) {
-        VOY_ARRAY_FOREACH (conf->vhosts) {
+        VOY_ARRAY_FOREACH (conf->vhosts, i) {
             voy_server_conf_t *cur_vhost = voy_array_get(conf->vhosts, i);
 
             if (cur_vhost) {
@@ -183,7 +183,7 @@ void debug_conf(voy_conf_t *conf)
                     }
                 }
                 if (cur_vhost->error_pages) {
-                    VOY_ARRAY_FOREACH (cur_vhost->error_pages) {
+                    VOY_ARRAY_FOREACH (cur_vhost->error_pages, i) {
                         voy_error_page_t *err_page = voy_array_get(cur_vhost->error_pages, i);
                         printf("vhost error page (code): %d\n", *(err_page->code));
                         printf("vhost error page (path): %s\n", err_page->page->string);

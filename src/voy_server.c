@@ -205,7 +205,7 @@ voy_array_t *get_listen_ports(voy_conf_t *conf)
 
     // ports from the default server
     if (conf->default_server && conf->default_server->ports) {
-        VOY_ARRAY_FOREACH (conf->default_server->ports) {
+        VOY_ARRAY_FOREACH (conf->default_server->ports, i) {
             int *p = voy_array_get(conf->default_server->ports, i);
             if (p) {
                 voy_array_push(ports, p);
@@ -215,10 +215,10 @@ voy_array_t *get_listen_ports(voy_conf_t *conf)
 
     // ports from virtual hosts
     if (conf->vhosts) {
-        VOY_ARRAY_FOREACH (conf->vhosts) {
+        VOY_ARRAY_FOREACH (conf->vhosts, i) {
             voy_server_conf_t *vhost = voy_array_get(conf->vhosts, i);
             if (vhost && vhost->ports) {
-                VOY_ARRAY_FOREACH (vhost->ports) {
+                VOY_ARRAY_FOREACH (vhost->ports, i) {
                     int *p       = voy_array_get(vhost->ports, i);
                     bool p_found = false;
 
@@ -306,7 +306,7 @@ bool voy_server_start(voy_conf_t *conf)
     // superuser priviledges, later on implement this
     // using the threads and whatnot
     int port = VOY_DEFAULT_PORT;
-    VOY_ARRAY_FOREACH (ports) {
+    VOY_ARRAY_FOREACH (ports, i) {
         int *p = voy_array_get(ports, i);
         if (p && *p > 1024) {
             port = *p;

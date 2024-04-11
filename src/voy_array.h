@@ -28,10 +28,8 @@ void *voy_array_unshift(voy_array_t *arr);
 void voy_array_swap(voy_array_t *arr, int a, int b);
 
 // Macro usage:
-// VOY_ARRAY_FOREACH(arr) {
-// your code here
-// you can use the variable "i" which contains the current index
-// you'll have to assign the current element to a variable to use it
+// VOY_ARRAY_FOREACH(arr, i) {
+// the variable "i" will contain the current index
 // }
 #define VOY_ARRAY_FOREACH(arr, i) for (int(i) = 0; (i) < (arr)->len; (i)++)
 

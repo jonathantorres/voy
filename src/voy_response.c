@@ -433,7 +433,7 @@ void voy_response_free(voy_response_t *res)
     }
 
     if (res->headers) {
-        VOY_HTABLE_FOREACH (res->headers) {
+        VOY_HTABLE_FOREACH (res->headers, elem, i, j) {
             free(elem->value);
         }
         VOY_HTABLE_FOREACH_END
